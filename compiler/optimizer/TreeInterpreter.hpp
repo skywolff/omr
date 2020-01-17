@@ -93,7 +93,7 @@ class TreeInterpreter : public TR::Optimization
 
    // private:
 
-//    int32_t process(TR::TreeTop *, TR::TreeTop *);
+   int32_t process(TR::Node *node);
 //    List<OMR::TreeInfo> _targetTrees;
 //    bool _cannotBeEliminated;
 //    bool _delayedRegStores;

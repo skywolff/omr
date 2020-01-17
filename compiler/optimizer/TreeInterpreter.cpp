@@ -74,7 +74,10 @@ TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
 
 int32_t TR::TreeInterpreter::perform()
 {
-   //  process(comp()->getStartTree(), NULL);
+    TR::TreeTop *firstTree = comp()->getStartTree();
+    TR::Node *node = firstTree->getNode();
+   process(node);
+
     return 1;
 }
 
@@ -83,3 +86,18 @@ TR::TreeInterpreter::optDetailString() const throw()
    {
    return "O^O TreeInterpreter: ";
    }
+
+int32_t TR::TreeInterpreter::process(TR::Node *node)
+{
+   uint16_t numChildren = node->getNumChildren();
+   printf("numChildren: %d\n", numChildren);
+
+   for (uint16_t i = 0; i < numChildren; i++){
+      printf("getChild, numChildren = %d\n", numChildren);
+      printf("numChildren\n");
+      process(node->getChild(i));
+   }
+   // printf("node opCodeName: %s\topcode: %d\n", node->getOpCode().getName(), node->getOpCodeValue());
+   // TR::Node *node2 = node->getChild(0);
+   // printf("node2 opCodeName: %s\topcode: %d\n", node2->getOpCode().getName(), node2->getOpCodeValue());
+}

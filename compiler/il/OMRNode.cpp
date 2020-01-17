@@ -4172,6 +4172,8 @@ OMR::Node::setChild(int32_t c, TR::Node * p)
 TR::Node *
 OMR::Node::getExtendedChild(int32_t c)
    {
+   // printf("hasNodeExtension %d", self()->hasNodeExtension());
+   // printf("NumElems: %d\n", _unionBase._extension.getNumElems());
    TR_ASSERT(self()->hasNodeExtension() && c < _unionBase._extension.getNumElems(),"Out of bounds errror when getting element %d in node %p\n",c,this);
    return _unionBase._extension.getExtensionPtr()->getElem<TR::Node *>(c);
    }
