@@ -20,6 +20,7 @@
 #############################################################################
 
 compiler_library(optimizer
+	${CMAKE_CURRENT_LIST_DIR}/TreeInterpreter.cpp
 	${CMAKE_CURRENT_LIST_DIR}/AsyncCheckInsertion.cpp
 	${CMAKE_CURRENT_LIST_DIR}/BackwardBitVectorAnalysis.cpp
 	${CMAKE_CURRENT_LIST_DIR}/BackwardIntersectionBitVectorAnalysis.cpp

@@ -61,6 +61,7 @@
 #include "optimizer/RegDepCopyRemoval.hpp"
 #include "optimizer/Simplifier.hpp"
 #include "optimizer/SinkStores.hpp"
+#include "optimizer/TreeInterpreter.hpp"
 #include "optimizer/TrivialDeadBlockRemover.hpp"
 #include "optimizer/GlobalValuePropagation.hpp"
 #include "optimizer/LocalValuePropagation.hpp"
@@ -96,11 +97,13 @@ static const OptimizationStrategy cheapTacticalGlobalRegisterAllocatorOpts[] =
 
 static const OptimizationStrategy JBcoldStrategyOpts[] =
    {
+   { OMR::treeInterpreter                                                          },
    { OMR::deadTreesElimination                                                     },
    { OMR::treeSimplification                                                       },
    { OMR::localCSE                                                                 },
    { OMR::basicBlockExtension                                                      },
-   { OMR::cheapTacticalGlobalRegisterAllocatorGroup                                },
+   // { OMR::cheapTacticalGlobalRegisterAllocatorGroup                                },
+   { OMR::endOpts                                                                  },
    };
 
 static const OptimizationStrategy JBwarmStrategyOpts[] =
@@ -153,6 +156,11 @@ Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *methodSymb
    : OMR::Optimizer(comp, methodSymbol, isIlGen, strategy, VNType)
    {
    // Initialize individual optimizations
+   _opts[OMR::treeInterpreter] =
+      new (comp->allocator()) TR::OptimizationManager(self(), TR::TreeInterpreter::create, OMR::treeInterpreter);
+   // printf("_opts addr: %p\n", _opts);
+   // printf("OMR::test: %d\n", OMR::test);
+   // printf("_opts[OMR::test]: %p\n", _opts[OMR::test]);
    _opts[OMR::trivialDeadBlockRemover] =
       new (comp->allocator()) TR::OptimizationManager(self(), TR_TrivialDeadBlockRemover::create, OMR::trivialDeadBlockRemover);
    _opts[OMR::deadTreesElimination] =
@@ -210,10 +218,10 @@ Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *methodSymb
    self()->setRequestOptimization(OMR::tacticalGlobalRegisterAllocator, true);
 
 
-   omrCompilationStrategies[noOpt] = JBwarmStrategyOpts;
-   omrCompilationStrategies[cold]  = JBwarmStrategyOpts;
-   omrCompilationStrategies[warm]  = JBwarmStrategyOpts;
-   omrCompilationStrategies[hot]   = JBwarmStrategyOpts;
+   omrCompilationStrategies[noOpt] = JBcoldStrategyOpts;
+   omrCompilationStrategies[cold]  = JBcoldStrategyOpts;
+   omrCompilationStrategies[warm]  = JBcoldStrategyOpts;
+   omrCompilationStrategies[hot]   = JBcoldStrategyOpts;
 
    }
 

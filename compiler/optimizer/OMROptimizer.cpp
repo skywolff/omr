@@ -734,6 +734,7 @@ OMR::Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *metho
    {
    // zero opts table
    memset(_opts, 0, sizeof(_opts));
+   printf("OMROptimer\n");
 
 /*
  * Allow downstream projects to disable the default initialization of optimizations
@@ -1266,6 +1267,8 @@ static void breakForTesting(int index)
 int32_t OMR::Optimizer::performOptimization(const OptimizationStrategy *optimization, int32_t firstOptIndex, int32_t lastOptIndex, int32_t doTiming)
    {
    OMR::Optimizations optNum = optimization->_num;
+   // printf("optNum: %d\n", optNum);
+   // printf("_opts addr: %p\n", _opts);
    TR::OptimizationManager *manager = getOptimization(optNum);
    TR_ASSERT(manager != NULL, "Optimization manager should have been initialized for %s.",
       getOptimizationName(optNum));
