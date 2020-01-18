@@ -42,43 +42,17 @@ Pow2Method::Pow2Method(OMR::JitBuilder::TypeDictionary *types)
 bool
 Pow2Method::buildIL()
    {
-   Store("a",
-      ConstInt64(1));
+   // Store("a",
+   //    ConstInt64(1));
 
-   Store("b",
-      ConstInt64(1));
-
-   Store("i",
-      Load("n"));
-
-   Store("keepIterating",
-      GreaterThan(
-         Load("i"),
-         ConstInt64(-1)));
-
-   OMR::JitBuilder::IlBuilder *loopBody = NULL;
-   WhileDoLoop("keepIterating", &loopBody);
-
-   loopBody->Store("a",
-   loopBody->   Load("b"));
-
-   loopBody->Store("b",
-   loopBody->   Add(
-   loopBody->      Load("a"),
-   loopBody->      Load("b")));
-
-   loopBody->Store("i",
-   loopBody->   Sub(
-   loopBody->      Load("i"),
-   loopBody->      ConstInt64(1)));
-
-   loopBody->Store("keepIterating",
-   loopBody->   GreaterThan(
-   loopBody->      Load("i"),
-   loopBody->      ConstInt64(-1)));
+   // Store("b",
+   //    ConstInt64(1));
 
    Return(
-      Load("a"));
+      Add(
+         ConstInt64(1),
+         ConstInt64(1)
+         ));
 
    return true;
    }
@@ -115,7 +89,7 @@ main(int argc, char *argv[])
    for (int32_t i=0;i < n;i++)
       r = pow2((int64_t) 45);
 
-   printf("pow2(45) is %lld\n", r);
+   printf("1 + 1 is %lld\n", r);
 
    printf ("Step 5: shutdown JIT\n");
    shutdownJit();

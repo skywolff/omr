@@ -26,6 +26,8 @@
 #include "env/TRMemory.hpp"
 #include "infra/List.hpp"
 #include "optimizer/Optimization.hpp"
+#include <stack>
+
 
 namespace TR { class Block; }
 namespace TR { class OptimizationManager; }
@@ -83,21 +85,19 @@ class TreeInterpreter : public TR::Optimization
    TreeInterpreter(TR::OptimizationManager *manager);
    static TR::Optimization *create(TR::OptimizationManager *manager);
    virtual int32_t perform();
-   // virtual int32_t performOnBlock(TR::Block *);
-   // virtual void prePerformOnBlocks();
    virtual const char * optDetailString() const throw();
 
    protected:
 
-   // virtual TR::TreeTop *findLastTreetop(TR::Block *block, TR::TreeTop *prevTree);
 
-   // private:
+   private:
 
+   std::stack <TR::Node *> opStack;
+   
    int32_t process(TR::Node *node);
-//    List<OMR::TreeInfo> _targetTrees;
-//    bool _cannotBeEliminated;
-//    bool _delayedRegStores;
+   int32_t performOp(TR::Node **children);
    };
 
 }
+
 #endif

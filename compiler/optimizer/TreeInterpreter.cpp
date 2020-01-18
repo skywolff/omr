@@ -69,14 +69,16 @@ TR::Optimization *TR::TreeInterpreter::create(TR::OptimizationManager *manager)
 TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
    : TR::Optimization(manager)
 {
-   printf("TreeInterpreter constructor, manager address: %p\n", manager);
+   // printf("TreeInterpreter constructor, manager address: %p\n", manager);
 }
 
 int32_t TR::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
-   for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop())
-      process(treeTop->getNode());
+   for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
+         process(treeTop->getNode());
+   }
+
       printf("\n");
    return 1;
 }
@@ -89,10 +91,24 @@ TR::TreeInterpreter::optDetailString() const throw()
 
 int32_t TR::TreeInterpreter::process(TR::Node *node)
 {
-   for (uint16_t i = 0; i < node->getNumChildren(); i++){
+   uint16_t numChildren = node->getNumChildren();
+   for (uint16_t i = 0; i < numChildren; i++){
       TR::Node * childNode = node->getChild(i);
       process(childNode);
    }
-   printf("opCodeName: %s\t Address: %p\n", node->getOpCode().getName(), node);
+   // printf("opCodeName: %s\t Address: %p\n", node->getOpCode().getName(), node);
+   TR::Node *children[numChildren];
+   for (uint16_t childI; childI < numChildren; childI++){
+      children[childI] = opStack.top();
+      opStack.pop();
+   }
+   performOp(children);
+
+   opStack.push(node);
    return 1;
+}
+
+int32_t performOp(TR::Node **children)
+{
+   
 }
