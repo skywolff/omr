@@ -95,9 +95,37 @@ class TreeInterpreter : public TR::Optimization
    std::stack <TR::Node *> opStack;
    
    int32_t process(TR::Node *node);
-   int32_t performOp(TR::Node **children);
    };
 
+class Operation {
+      public:
+
+      virtual TR::Node * performOp(TR::Node **children);
+};
+
+class AddOperation : public Operation {
+   public:
+
+   TR::Node * performOp(TR::Node **children);
+};
+
+class LoadOperation : public Operation {
+   public:
+   
+   TR::Node * performOp(TR::Node **children);
+};
+
+class StoreOperation : public Operation {
+   public:
+   
+   TR::Node * performOp(TR::Node **children);
+};
+
+class iConstOperation : public Operation {
+   public:
+
+   TR::Node * performOp(TR::Node **children);
+};
 }
 
 #endif
