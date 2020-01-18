@@ -19,13 +19,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
 
-#ifndef TR_TreeInterpreter_INCL
-#define TR_TreeInterpreter_INCL
+#ifndef TR_TREEINTERPRETER_INCL
+#define TR_TREEINTERPRETER_INCL
 
 #include <stdint.h>
 #include "env/TRMemory.hpp"
 #include "infra/List.hpp"
 #include "optimizer/Optimization.hpp"
+#include "optimizer/Operation.hpp"
 #include <stack>
 
 
@@ -95,37 +96,9 @@ class TreeInterpreter : public TR::Optimization
    std::stack <TR::Node *> opStack;
    
    int32_t process(TR::Node *node);
+
+   TR::Operation GetOperation(TR::ILOpCodes opcode);
    };
-
-class Operation {
-      public:
-
-      virtual TR::Node * performOp(TR::Node **children);
-};
-
-class AddOperation : public Operation {
-   public:
-
-   TR::Node * performOp(TR::Node **children);
-};
-
-class LoadOperation : public Operation {
-   public:
-   
-   TR::Node * performOp(TR::Node **children);
-};
-
-class StoreOperation : public Operation {
-   public:
-   
-   TR::Node * performOp(TR::Node **children);
-};
-
-class iConstOperation : public Operation {
-   public:
-
-   TR::Node * performOp(TR::Node **children);
-};
 }
 
 #endif

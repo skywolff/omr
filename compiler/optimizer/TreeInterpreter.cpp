@@ -56,6 +56,7 @@
 #include "optimizer/OptimizationManager.hpp"
 #include "optimizer/Optimizations.hpp"
 #include "optimizer/Optimizer.hpp"
+#include "optimizer/Operation.hpp"
 #include "optimizer/TransformUtil.hpp"
 #include "ras/Debug.hpp"
 
@@ -103,46 +104,9 @@ int32_t TR::TreeInterpreter::process(TR::Node *node)
       opStack.pop();
    }
 
-   TR::Operation operation = GetOperation(node->getOpCodeValue());
+   TR::Operation operation = TR::GetOperation(node->getOpCodeValue());
    TR::Node * result = operation.performOp(children);
    opStack.push(result);
    printf("%d", result->getInt());
    return 1;
-}
-
-TR::Node * TR::AddOperation::performOp(TR::Node **children)
-{
-   TR::Node * result;
-   result->setInt(children[0]->getInt() + children[1]->getInt());
-   return result;
-}
-
-TR::Node * TR::StoreOperation::performOp(TR::Node **children)
-{
-   TR::Node * result;
-   return result;
-}
-
-TR::Node * TR::LoadOperation::performOp(TR::Node **children)
-{
-   TR::Node * result;
-   return result;
-}
-
-TR::Node * TR::iConstOperation::performOp(TR::Node **children)
-{
-   return children[0];
-}
-
-TR::Operation GetOperation(TR::ILOpCodes opcode){
-   switch (opcode){
-      case TR::iadd:
-         return TR::AddOperation();
-      case TR::istore:
-         return TR::StoreOperation();
-      case TR::iload:
-         return TR::LoadOperation();
-      case TR::iconst:
-         return TR::iConstOperation();
-   }   
 }
