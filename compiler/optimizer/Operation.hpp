@@ -23,6 +23,8 @@
 #define TR_OPERATION_INCL
 
 #include <stdint.h>
+#include "il/Node.hpp"
+#include "il/Node_inlines.hpp"
 #include "optimizer/Optimization.hpp"
 
 namespace TR{

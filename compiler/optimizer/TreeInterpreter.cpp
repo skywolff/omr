@@ -56,7 +56,6 @@
 #include "optimizer/OptimizationManager.hpp"
 #include "optimizer/Optimizations.hpp"
 #include "optimizer/Optimizer.hpp"
-#include "optimizer/Operation.hpp"
 #include "optimizer/TransformUtil.hpp"
 #include "ras/Debug.hpp"
 

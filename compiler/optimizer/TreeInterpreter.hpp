@@ -96,8 +96,6 @@ class TreeInterpreter : public TR::Optimization
    std::stack <TR::Node *> opStack;
    
    int32_t process(TR::Node *node);
-
-   TR::Operation GetOperation(TR::ILOpCodes opcode);
    };
 }
 
