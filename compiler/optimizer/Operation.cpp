@@ -21,6 +21,10 @@
 
 #include "optimizer/Operation.hpp"
 
+TR::Node * TR::Operation::performOp(TR::Node **children){
+    
+}
+
 TR::Node * TR::AddOperation::performOp(TR::Node **children)
 {
    TR::Node * result;
