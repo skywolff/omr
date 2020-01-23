@@ -84,12 +84,9 @@ main(int argc, char *argv[])
 
    printf("Step 4: invoke compiled code\n");
    Pow2FunctionType *pow2 = (Pow2FunctionType *)entry;
-   int32_t n = (argc > 1) ? atoi(argv[1]) : 6000000;
-   int64_t r;
-   for (int32_t i=0;i < n;i++)
-      r = pow2((int64_t) 45);
+   int64_t r = pow2((int64_t) 45);
 
-   printf("1 + 1 is %lld\n", r);
+   printf("1 + 1 is %ld\n", r);
 
    printf ("Step 5: shutdown JIT\n");
    shutdownJit();

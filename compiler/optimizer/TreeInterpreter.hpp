@@ -93,7 +93,7 @@ class TreeInterpreter : public TR::Optimization
 
    private:
 
-   std::stack <TR::Node *> opStack;
+   std::stack <void *> operandStack;
    
    int32_t process(TR::Node *node);
    };

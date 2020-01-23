@@ -26,39 +26,18 @@
 #include "il/Node.hpp"
 #include "il/Node_inlines.hpp"
 #include "optimizer/Optimization.hpp"
+#include <exception>
 
 namespace TR{
-    class Operation {
-      public:
-
-      virtual TR::Node * performOp(TR::Node **children);
-    };
-
-    class AddOperation : public Operation {
+  class Operation {
     public:
 
-    TR::Node * performOp(TR::Node **children);
-    };
+    void * value;
 
-    class LoadOperation : public Operation {
-    public:
-    
-    TR::Node * performOp(TR::Node **children);
-    };
+    virtual void * performOp(void **children);
+  };
 
-    class StoreOperation : public Operation {
-    public:
-    
-    TR::Node * performOp(TR::Node **children);
-    };
-
-    class iConstOperation : public Operation {
-    public:
-
-    TR::Node * performOp(TR::Node **children);
-    };
-
-    TR::Operation GetOperation(TR::ILOpCodes opcode);
+  TR::Operation * GetOperation(TR::Node * node);
 }
 
 #endif

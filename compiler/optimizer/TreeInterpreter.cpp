@@ -91,21 +91,20 @@ TR::TreeInterpreter::optDetailString() const throw()
 
 int32_t TR::TreeInterpreter::process(TR::Node *node)
 {
-   uint16_t numChildren = node->getNumChildren();
-   for (uint16_t i = 0; i < numChildren; i++){
+   int numChildren = node->getNumChildren();
+   for (int i = 0; i < numChildren; i++){
       TR::Node * childNode = node->getChild(i);
       process(childNode);
    }
    // printf("opCodeName: %s\t Address: %p\n", node->getOpCode().getName(), node);
-   TR::Node *children[numChildren];
-   for (uint16_t childI; childI < numChildren; childI++){
-      children[childI] = opStack.top();
-      opStack.pop();
+   void *children[numChildren];
+   for (int childI = 0; childI < numChildren; childI++){
+      children[childI] = operandStack.top();
+      operandStack.pop();
    }
 
-   TR::Operation operation = TR::GetOperation(node->getOpCodeValue());
-   TR::Node * result = operation.performOp(children);
-   opStack.push(result);
-   printf("%d", result->getInt());
+   TR::Operation * operation = TR::GetOperation(node);
+   void * result = operation->performOp(children);
+   operandStack.push(result);
    return 1;
 }
