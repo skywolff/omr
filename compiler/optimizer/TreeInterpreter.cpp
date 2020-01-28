@@ -95,6 +95,6 @@ int32_t TR::TreeInterpreter::process(TR::Node *node)
    for (int i = 0; i < numChildren; i++){
       process(node->getChild(i));
    }
-   TR::performOp(node);
+   TR::TI::performOp(node, &this->operandStack);
    return 1;
 }

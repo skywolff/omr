@@ -21,15 +21,15 @@
 
 #include "optimizer/Operation.hpp"
 
-void perform_iadd (TR::Node * node){
+void TR::TI::perform_iadd (TR::Node * node){
    node->setInt(node->getChild(0)->getInt()+node->getChild(1)->getInt());
 }
 
-void perform_ladd (TR::Node * node){
+void TR::TI::perform_ladd (TR::Node * node){
    node->setLongInt(node->getChild(0)->getLongInt()+node->getChild(1)->getLongInt());
 }
 
-void performOp(TR::Node * node){
+void TR::TI::performOp(TR::Node * node, std::stack <TR::Node *> * operandStack){
 
    switch (node->getOpCodeValue()){
       case TR::iadd:
@@ -55,8 +55,8 @@ void performOp(TR::Node * node){
    int numChildren = node->getNumChildren();
    TR::Node *children[numChildren];
    for (int childI = 0; childI < numChildren; childI++){
-      children[childI] = TR::operandStack.top();
-      TR::operandStack.pop();
+      children[childI] = operandStack->top();
+      operandStack->pop();
    }
 }
 

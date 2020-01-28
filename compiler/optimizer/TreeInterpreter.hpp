@@ -82,7 +82,7 @@ namespace TR
 class TreeInterpreter : public TR::Optimization
    {
    public:
-
+   std::stack <TR::Node *> operandStack;
    TreeInterpreter(TR::OptimizationManager *manager);
    static TR::Optimization *create(TR::OptimizationManager *manager);
    virtual int32_t perform();
