@@ -21,133 +21,44 @@
 
 #include "optimizer/Operation.hpp"
 
-void * TR::Operation::performOp(void **children){
-    
+void perform_iadd (TR::Node * node){
+   node->setInt(node->getChild(0)->getInt()+node->getChild(1)->getInt());
 }
 
-class iAddOperation : public TR::Operation {
-    public:
+void perform_ladd (TR::Node * node){
+   node->setLongInt(node->getChild(0)->getLongInt()+node->getChild(1)->getLongInt());
+}
 
-    void * performOp(void **children) {
-       int32_t * result = (int32_t*)malloc(sizeof(int32_t));
-       *result = *(int32_t*)children[0] + *(int32_t*)children[1];
-      return result;
-    }
-};
-
-class lAddOperation : public TR::Operation {
-    public:
-
-    void * performOp(void **children) {
-       int64_t * result = (int64_t*)malloc(sizeof(int64_t));
-       *result = *(int64_t*)children[0] + *(int64_t*)children[1];
-      return result;
-    }
-};
-
-class iStoreOperation : public TR::Operation {
-    public:
-
-    void * performOp(void **children) {
-         TR::Node * result;///////////////////////////// fix this
-         return result;
-      }
-};
-
-class lStoreOperation : public TR::Operation {
-    public:
-
-    void * performOp(void **children) {
-         TR::Node * result;///////////////////////////// fix this
-         return result;
-      }
-};
-
-class iLoadOperation : public TR::Operation {
-    public:
-    
-    void * performOp(void **children){
-      TR::Node * result; ///////////////////////////// fix this
-      return result;
-    }
-};
-
-class lLoadOperation : public TR::Operation {
-    public:
-    
-    void * performOp(void **children){
-      TR::Node * result;///////////////////////////// fix this
-      return result;
-    }
-};
-
-class iConstOperation : public TR::Operation {
-   public:
-
-   void * performOp(void **children) {
-      return children[0];
-   }
-};
-
-class lConstOperation : public TR::Operation {
-   public:
-
-   lConstOperation(int64_t val){
-      this->value = malloc(sizeof(int64_t));
-      memcpy(this->value, (const void *)&val, sizeof(int64_t));
-   }
-
-   void * performOp(void **children) {
-      return this->value;
-   }
-};
-
-class iReturnOperation : public TR::Operation {
-   public:
-
-   void * performOp(void **children) {
-      return children[0];///////////////////////////// fix this
-   }
-};
-
-class lReturnOperation : public TR::Operation {
-   public:
-
-   void * performOp(void **children) {
-      return children[0];///////////////////////////// fix this
-   }
-};
-
-TR::Operation * TR::GetOperation(TR::Node * node){
+void performOp(TR::Node * node){
 
    switch (node->getOpCodeValue()){
       case TR::iadd:
-         return new iAddOperation;
+         perform_iadd(node);
       case TR::ladd:
-         return new lAddOperation;
+         perform_ladd(node);
       case TR::istore:
-         return new iStoreOperation;
       case TR::lstore:
-         return new lStoreOperation;
       case TR::iload:
-         return new iLoadOperation;
       case TR::lload:
-         return new lLoadOperation;
-      case TR::iconst:
-         return new iConstOperation;
-      case TR::lconst:
-         return new lConstOperation(node->getLongInt());
       case TR::ireturn:
-         return new iReturnOperation;
       case TR::lreturn:
-         return new lReturnOperation;
       case TR::BBStart:
-         return new Operation;
       case TR::BBEnd:
-         return new Operation;
       case TR::treetop:
-         return new Operation;
+      case TR::iconst:
+      case TR::lconst:
+         return;
       default:
          throw std::runtime_error("Opcode unrecognized");
    }   
+
+   int numChildren = node->getNumChildren();
+   TR::Node *children[numChildren];
+   for (int childI = 0; childI < numChildren; childI++){
+      children[childI] = TR::operandStack.top();
+      TR::operandStack.pop();
+   }
 }
+
+   
+   

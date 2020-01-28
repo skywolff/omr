@@ -29,15 +29,7 @@
 #include <exception>
 
 namespace TR{
-  class Operation {
-    public:
-
-    void * value;
-
-    virtual void * performOp(void **children);
-  };
-
-  TR::Operation * GetOperation(TR::Node * node);
+  void performOp(TR::Node * node);
+  std::stack <TR::Node *> operandStack;
 }
-
 #endif

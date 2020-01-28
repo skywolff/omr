@@ -93,18 +93,8 @@ int32_t TR::TreeInterpreter::process(TR::Node *node)
 {
    int numChildren = node->getNumChildren();
    for (int i = 0; i < numChildren; i++){
-      TR::Node * childNode = node->getChild(i);
-      process(childNode);
+      process(node->getChild(i));
    }
-   // printf("opCodeName: %s\t Address: %p\n", node->getOpCode().getName(), node);
-   void *children[numChildren];
-   for (int childI = 0; childI < numChildren; childI++){
-      children[childI] = operandStack.top();
-      operandStack.pop();
-   }
-
-   TR::Operation * operation = TR::GetOperation(node);
-   void * result = operation->performOp(children);
-   operandStack.push(result);
+   TR::performOp(node);
    return 1;
 }

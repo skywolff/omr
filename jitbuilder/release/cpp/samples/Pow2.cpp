@@ -50,8 +50,8 @@ Pow2Method::buildIL()
 
    Return(
       Add(
-         ConstInt64(1),
-         ConstInt64(1)
+         ConstInt64(7),
+         ConstInt64(2)
          ));
 
    return true;
@@ -86,7 +86,7 @@ main(int argc, char *argv[])
    Pow2FunctionType *pow2 = (Pow2FunctionType *)entry;
    int64_t r = pow2((int64_t) 45);
 
-   printf("1 + 1 is %ld\n", r);
+   printf("7 + 2 is %ld\n", r);
 
    printf ("Step 5: shutdown JIT\n");
    shutdownJit();
