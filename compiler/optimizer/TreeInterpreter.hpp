@@ -28,6 +28,7 @@
 #include "optimizer/Optimization.hpp"
 #include "optimizer/Operation.hpp"
 #include <stack>
+#include <string>
 
 
 namespace TR { class Block; }
@@ -36,26 +37,48 @@ namespace TR { class TreeTop; }
 
 namespace TR::TI
 {
-   union nodeValue
-   {
-      // aconst - address constant (zero value means NULL)
-      // iconst - integer constant (32-bit signed 2's complement)
-      // lconst - long integer constant (64-bit signed 2's complement)
-      // fconst - float constant (32-bit ieee fp)
-      // dconst - double constant (64-bit ieee fp)
-      // bconst - byte integer constant (8-bit signed 2's complement)
-      // sconst - short integer constant (16-bit signed 2's complement)
-      uintptrj_t  aconst;
-      int32_t     iconst; 
-      int64_t     lconst; 
+   // aconst - address constant (zero value means NULL)
+   // iconst - integer constant (32-bit signed 2's complement)
+   // lconst - long integer constant (64-bit signed 2's complement)
+   // fconst - float constant (32-bit ieee fp)
+   // dconst - double constant (64-bit ieee fp)
+   // bconst - byte integer constant (8-bit signed 2's complement)
+   // sconst - short integer constant (16-bit signed 2's complement)
+   std::string DATANAME[7] = {
+      "ADDRESS",
+      "INTEGER",
+      "LONG",
+      "FLOAT",
+      "DOUBLE",
+      "BYTE_INT",
+      "SHORT_INT" 
    };
+   
+   typedef enum {
+      ADDRESS,
+      INTEGER,
+      LONG,
+      FLOAT,
+      DOUBLE,
+      BYTE_INT,
+      SHORT_INT 
+   }DATATYPE;
+
+   typedef struct {
+      DATATYPE type;
+      union{
+         uintptrj_t  aconst;
+         int32_t     iconst;
+         int64_t     lconst; 
+      } data;
+   }VALUE;
    
    class TreeInterpreter : public TR::Optimization
    {
       public:
       
       // std::stack <TR::Node *> operandStack;
-      std::map<ncount_t, nodeValue> nodeValuesMap;
+      std::map<ncount_t, VALUE> nodeValuesMap;
 
       TreeInterpreter(TR::OptimizationManager *manager);
       static TR::Optimization *create(TR::OptimizationManager *manager);
@@ -63,10 +86,10 @@ namespace TR::TI
       virtual const char * optDetailString() const throw();
 
       private:
-      nodeValue process(TR::Node *node);
+      VALUE process(TR::Node *node);
 
       // operations
-      nodeValue performOp(TR::Node * node);
+      VALUE performOp(TR::Node * node);
    };
 }
 

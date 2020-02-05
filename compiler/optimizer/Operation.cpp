@@ -22,9 +22,9 @@
 // #include "optimizer/Operation.hpp"
 #include "optimizer/TreeInterpreter.hpp"
 
-TR::TI::nodeValue
+TR::TI::VALUE
 TR::TI::TreeInterpreter::performOp(TR::Node * node){
-   nodeValue operand1, operand2, result;
+   VALUE operand1, operand2, result;
    switch (node->getOpCodeValue()){
       case TR::BBStart:
          break;
@@ -35,27 +35,27 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
 
       // long operations
       case TR::lconst:
-         result.lconst = node->getLongInt();
+         result.data.lconst = node->getLongInt();
          break;
       case TR::ladd:
          operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
-         result.lconst = operand1.lconst + operand2.lconst;
+         result.data.lconst = operand1.data.lconst + operand2.data.lconst;
          break;
       case TR::lsub:
          operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
-         result.lconst = operand1.lconst - operand2.lconst;
+         result.data.lconst = operand1.data.lconst - operand2.data.lconst;
          break;
       case TR::lmul:
          operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
-         result.lconst = operand1.lconst * operand2.lconst;
+         result.data.lconst = operand1.data.lconst * operand2.data.lconst;
          break;
       case TR::ldiv:
          operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
-         result.lconst = operand1.lconst / operand2.lconst;
+         result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
       case TR::lload:
          break;

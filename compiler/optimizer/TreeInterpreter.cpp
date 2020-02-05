@@ -91,7 +91,7 @@ TR::TI::TreeInterpreter::optDetailString() const throw()
    return "O^O TreeInterpreter: ";
    }
 
-TR::TI::nodeValue
+TR::TI::VALUE
 TR::TI::TreeInterpreter::process(TR::Node *node)
 {
    int numChildren = node->getNumChildren();
