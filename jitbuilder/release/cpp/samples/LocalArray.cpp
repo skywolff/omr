@@ -33,13 +33,13 @@ static void printArray(int32_t numLongs, int64_t *array)
    #define PRINTArray_LINE LINETOSTR(__LINE__)
    printf("printArray (%d) :\n", numLongs);
    for (int32_t i=0;i < numLongs;i++)
-      printf("\t%lld\n", array[i]);
+      printf("\t%ld\n", array[i]);
    }
 
 static void printInt64(int64_t num)
    {
    #define PRINTInt64_LINE LINETOSTR(__LINE__)
-   printf("%lld\n", num);
+   printf("%ld\n", num);
    }
 
 

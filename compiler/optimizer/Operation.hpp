@@ -27,10 +27,4 @@
 #include "il/Node_inlines.hpp"
 #include "optimizer/Optimization.hpp"
 #include <exception>
-
-namespace TR::TI {
-  
-
-  
-}
 #endif

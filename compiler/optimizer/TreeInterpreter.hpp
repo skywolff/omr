@@ -28,13 +28,14 @@
 #include "optimizer/Optimization.hpp"
 #include "optimizer/Operation.hpp"
 #include <stack>
+#include <set>
 
 
 namespace TR { class Block; }
 namespace TR { class OptimizationManager; }
 namespace TR { class TreeTop; }
 
-namespace TR::TI
+namespace TR
 {
    union nodeValue
    {
@@ -53,24 +54,20 @@ namespace TR::TI
    class TreeInterpreter : public TR::Optimization
    {
       public:
-      
-      std::stack <TR::Node *> operandStack;
-      std::map<ncount_t, nodeValue> nodeValuesMap;
-
       TreeInterpreter(TR::OptimizationManager *manager);
       static TR::Optimization *create(TR::OptimizationManager *manager);
       virtual int32_t perform();
       virtual const char * optDetailString() const throw();
+      static void performOp(TR::Node * node);
+      static void process(TR::Node *node, std::set<ncount_t> * processedNodeIndices);
 
       private:
-      nodeValue process(TR::Node *node);
 
       // operations
-      nodeValue performOp(TR::Node * node);
-      void performLongAdd (TR::Node * node);
-      void performLongSub (TR::Node * node);
-      void performLongMul (TR::Node * node);
-      void performLongDiv (TR::Node * node);
+      static void performLongAdd (TR::Node * node);
+      static void performLongSub (TR::Node * node);
+      static void performLongMul (TR::Node * node);
+      static void performLongDiv (TR::Node * node);
    };
 }
 

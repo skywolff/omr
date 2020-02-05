@@ -22,62 +22,56 @@
 // #include "optimizer/Operation.hpp"
 #include "optimizer/TreeInterpreter.hpp"
 
-TR::TI::nodeValue
-TR::TI::TreeInterpreter::performOp(TR::Node * node){
-   nodeValue dummy;
+void TR::TreeInterpreter::performOp(TR::Node * node){
    switch (node->getOpCodeValue()){
       case TR::BBStart:
-         return dummy;
+         return;
       case TR::BBEnd:
-         return dummy;
+         return;
       case TR::treetop:
-         return dummy;
+         return;
 
       // long operations
       case TR::lconst:
-         return dummy;
+         return;
       case TR::ladd:
          performLongAdd(node);
+         return;
       case TR::lsub:
          performLongSub(node);
+         return;
       case TR::lmul:
          performLongMul(node);
+         return;
       case TR::ldiv:
          performLongDiv(node);
+         return;
       case TR::lload:
+         return;
       case TR::lstore:
+         return;
       case TR::lreturn:
+         return;
       default:
          throw std::runtime_error("Opcode unrecognized");
-   }   
-
-   int numChildren = node->getNumChildren();
-   TR::Node *children[numChildren];
-   for (int childI = 0; childI < numChildren; childI++){
-      children[childI] = operandStack.top();
-      operandStack.pop();
    }
 }
 
-void
-TR::TI::TreeInterpreter::performLongAdd(TR::Node * node){
+void TR::TreeInterpreter::performLongAdd(TR::Node * node){
    node->setLongInt(node->getChild(0)->getLongInt() + node->getChild(1)->getLongInt());
 }
 
-void
-TR::TI::TreeInterpreter::performLongSub(TR::Node * node)
+void TR::TreeInterpreter::performLongSub(TR::Node * node)
 {
    node->setLongInt(node->getChild(0)->getLongInt() - node->getChild(1)->getLongInt());
 }
 
-void
-TR::TI::TreeInterpreter::performLongMul(TR::Node * node)
+void TR::TreeInterpreter::performLongMul(TR::Node * node)
 {
    node->setLongInt(node->getChild(0)->getLongInt() * node->getChild(1)->getLongInt());
 }
 
-void
-TR::TI::TreeInterpreter::performLongDiv(TR::Node * node)
+void TR::TreeInterpreter::performLongDiv(TR::Node * node)
 {
    node->setLongInt(node->getChild(0)->getLongInt() / node->getChild(1)->getLongInt());
 }

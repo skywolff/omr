@@ -49,7 +49,7 @@ static void printDouble(double val)
 static void printPointer(int64_t val)
    {
    #define PRINTPOINTER_LINE LINETOSTR(__LINE__)
-   printf("%llx", val);
+   printf("%ld", val);
    }
 
 DotProduct::DotProduct(OMR::JitBuilder::TypeDictionary *types)

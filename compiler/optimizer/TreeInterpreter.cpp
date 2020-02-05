@@ -60,48 +60,46 @@
 #include "optimizer/TransformUtil.hpp"
 #include "ras/Debug.hpp"
 
-
-TR::Optimization *
-TR::TI::TreeInterpreter::create(TR::OptimizationManager *manager)
-   {
-   return new (manager->allocator()) TR::TI::TreeInterpreter(manager);
-   }
+TR::Optimization * TR::TreeInterpreter::create(TR::OptimizationManager *manager)
+{
+   return new (manager->allocator()) TR::TreeInterpreter(manager);
+}
 
 
-TR::TI::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
+TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
    : TR::Optimization(manager)
 {
    // printf("TreeInterpreter constructor, manager address: %p\n", manager);
 }
 
 int32_t
-TR::TI::TreeInterpreter::perform()
+TR::TreeInterpreter::perform()
 {
+   std::set<ncount_t> processedNodeIndices;
    TR::TreeTop *firstTree = comp()->getStartTree();
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
-         process(treeTop->getNode());
+         process(treeTop->getNode(), &processedNodeIndices);
    }
 
    return 1;
 }
 
 const char *
-TR::TI::TreeInterpreter::optDetailString() const throw()
+TR::TreeInterpreter::optDetailString() const throw()
    {
    return "O^O TreeInterpreter: ";
    }
 
-TR::TI::nodeValue
-TR::TI::TreeInterpreter::process(TR::Node *node)
+void TR::TreeInterpreter::process(TR::Node *node, std::set<ncount_t> * processedNodeIndices)
 {
    int numChildren = node->getNumChildren();
    for (int i = 0; i < numChildren; i++){
-      process(node->getChild(i));
+      process(node->getChild(i), processedNodeIndices);
    }
    // if the node already exists in the map, return value form map
    // else perform operation
-   if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end())
-      return nodeValuesMap[node->getGlobalIndex()];
-   else
-      return performOp(node);
+   if (processedNodeIndices->find(node->getGlobalIndex()) == processedNodeIndices->end()) {
+      TR::TreeInterpreter::performOp(node);
+      processedNodeIndices->insert(node->getGlobalIndex());
+   }
 }
