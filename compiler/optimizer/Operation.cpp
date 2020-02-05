@@ -24,60 +24,55 @@
 
 TR::TI::nodeValue
 TR::TI::TreeInterpreter::performOp(TR::Node * node){
-   nodeValue dummy;
+   nodeValue operand1, operand2, result;
    switch (node->getOpCodeValue()){
       case TR::BBStart:
-         return dummy;
+         break;
       case TR::BBEnd:
-         return dummy;
+         break;
       case TR::treetop:
-         return dummy;
+         break;
 
       // long operations
       case TR::lconst:
-         return dummy;
+         result.lconst = node->getLongInt();
+         break;
       case TR::ladd:
-         performLongAdd(node);
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.lconst = operand1.lconst + operand2.lconst;
+         break;
       case TR::lsub:
-         performLongSub(node);
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.lconst = operand1.lconst - operand2.lconst;
+         break;
       case TR::lmul:
-         performLongMul(node);
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.lconst = operand1.lconst * operand2.lconst;
+         break;
       case TR::ldiv:
-         performLongDiv(node);
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.lconst = operand1.lconst / operand2.lconst;
+         break;
       case TR::lload:
+         break;
       case TR::lstore:
+         break;
       case TR::lreturn:
+         break;
       default:
          throw std::runtime_error("Opcode unrecognized");
    }   
 
-   int numChildren = node->getNumChildren();
-   TR::Node *children[numChildren];
-   for (int childI = 0; childI < numChildren; childI++){
-      children[childI] = operandStack.top();
-      operandStack.pop();
-   }
-}
-
-void
-TR::TI::TreeInterpreter::performLongAdd(TR::Node * node){
-   node->setLongInt(node->getChild(0)->getLongInt() + node->getChild(1)->getLongInt());
-}
-
-void
-TR::TI::TreeInterpreter::performLongSub(TR::Node * node)
-{
-   node->setLongInt(node->getChild(0)->getLongInt() - node->getChild(1)->getLongInt());
-}
-
-void
-TR::TI::TreeInterpreter::performLongMul(TR::Node * node)
-{
-   node->setLongInt(node->getChild(0)->getLongInt() * node->getChild(1)->getLongInt());
-}
-
-void
-TR::TI::TreeInterpreter::performLongDiv(TR::Node * node)
-{
-   node->setLongInt(node->getChild(0)->getLongInt() / node->getChild(1)->getLongInt());
+   // int numChildren = node->getNumChildren();
+   // TR::Node *children[numChildren];
+   // for (int childI = 0; childI < numChildren; childI++){
+   //    children[childI] = operandStack.top();
+   //    operandStack.pop();
+   // }
+   nodeValuesMap[node->getGlobalIndex()] = result;
+   return result;
 }

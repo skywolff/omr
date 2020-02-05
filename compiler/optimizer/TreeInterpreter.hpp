@@ -54,7 +54,7 @@ namespace TR::TI
    {
       public:
       
-      std::stack <TR::Node *> operandStack;
+      // std::stack <TR::Node *> operandStack;
       std::map<ncount_t, nodeValue> nodeValuesMap;
 
       TreeInterpreter(TR::OptimizationManager *manager);
@@ -67,10 +67,6 @@ namespace TR::TI
 
       // operations
       nodeValue performOp(TR::Node * node);
-      void performLongAdd (TR::Node * node);
-      void performLongSub (TR::Node * node);
-      void performLongMul (TR::Node * node);
-      void performLongDiv (TR::Node * node);
    };
 }
 
