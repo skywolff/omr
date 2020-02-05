@@ -22,6 +22,7 @@
 #include "optimizer/TreeInterpreter.hpp"
 #include <stddef.h>
 #include <stdint.h>
+#include <map>
 #include "infra/forward_list.hpp"
 #include "codegen/CodeGenerator.hpp"
 #include "env/FrontEnd.hpp"
@@ -60,41 +61,47 @@
 #include "ras/Debug.hpp"
 
 
-TR::Optimization *TR::TreeInterpreter::create(TR::OptimizationManager *manager)
+TR::Optimization *
+TR::TI::TreeInterpreter::create(TR::OptimizationManager *manager)
    {
-   return new (manager->allocator()) TR::TreeInterpreter(manager);
+   return new (manager->allocator()) TR::TI::TreeInterpreter(manager);
    }
 
 
-TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
+TR::TI::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
    : TR::Optimization(manager)
 {
    // printf("TreeInterpreter constructor, manager address: %p\n", manager);
 }
 
-int32_t TR::TreeInterpreter::perform()
+int32_t
+TR::TI::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
          process(treeTop->getNode());
    }
 
-      printf("\n");
    return 1;
 }
 
 const char *
-TR::TreeInterpreter::optDetailString() const throw()
+TR::TI::TreeInterpreter::optDetailString() const throw()
    {
    return "O^O TreeInterpreter: ";
    }
 
-int32_t TR::TreeInterpreter::process(TR::Node *node)
+TR::TI::nodeValue
+TR::TI::TreeInterpreter::process(TR::Node *node)
 {
    int numChildren = node->getNumChildren();
    for (int i = 0; i < numChildren; i++){
       process(node->getChild(i));
    }
-   TR::TI::performOp(node, &this->operandStack);
-   return 1;
+   // if the node already exists in the map, return value form map
+   // else perform operation
+   if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end())
+      return nodeValuesMap[node->getGlobalIndex()];
+   else
+      return performOp(node);
 }

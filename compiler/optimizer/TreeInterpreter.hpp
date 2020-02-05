@@ -34,64 +34,43 @@ namespace TR { class Block; }
 namespace TR { class OptimizationManager; }
 namespace TR { class TreeTop; }
 
-// namespace OMR
-// {
-
-// class TreeInfo
-//    {
-//    public:
-//    TR_ALLOC(TR_Memory::LocalOpts)
-
-//    TreeInfo(TR::TreeTop *treeTop, int32_t height)
-//       : _tree(treeTop),
-//         _height(height)
-//       {
-//       }
-
-//    TR::TreeTop *getTreeTop()  {return _tree;}
-//    void setTreeTop(TR::TreeTop *tree)  {_tree = tree;}
-
-//    int32_t getHeight()    {return _height;}
-//    void setHeight(int32_t height) {_height = height;}
-
-//    private:
-
-//    int32_t _height;
-//    TR::TreeTop *_tree;
-//    };
-
-// }
-
-
-namespace TR
+namespace TR::TI
 {
-
-/*
- * Class DeadTreesElimination
- * ==========================
- *
- * Expressions that are evaluated and not used for a few instructions can 
- * actually be evaluated exactly where required (subject to the constraint 
- * that their values should be the same if evaluated later). This optimization 
- * attempts to simply delay evaluation of expressions and has the effect of 
- * reducing register pressure by shortening live ranges. It has the effect 
- * of removing some IL trees that are simply anchors for (already) evaluated 
- * expressions and making the trees more compact.
- */
-
-class TreeInterpreter : public TR::Optimization
+   union nodeValue
    {
-   public:
-   std::stack <TR::Node *> operandStack;
-   TreeInterpreter(TR::OptimizationManager *manager);
-   static TR::Optimization *create(TR::OptimizationManager *manager);
-   virtual int32_t perform();
-   virtual const char * optDetailString() const throw();
+      // aconst - address constant (zero value means NULL)
+      // iconst - integer constant (32-bit signed 2's complement)
+      // lconst - long integer constant (64-bit signed 2's complement)
+      // fconst - float constant (32-bit ieee fp)
+      // dconst - double constant (64-bit ieee fp)
+      // bconst - byte integer constant (8-bit signed 2's complement)
+      // sconst - short integer constant (16-bit signed 2's complement)
+      uintptrj_t  aconst;
+      int32_t     iconst; 
+      int64_t     lconst; 
+   };
+   
+   class TreeInterpreter : public TR::Optimization
+   {
+      public:
+      
+      std::stack <TR::Node *> operandStack;
+      std::map<ncount_t, nodeValue> nodeValuesMap;
 
-   protected:
+      TreeInterpreter(TR::OptimizationManager *manager);
+      static TR::Optimization *create(TR::OptimizationManager *manager);
+      virtual int32_t perform();
+      virtual const char * optDetailString() const throw();
 
-   private:
-   int32_t process(TR::Node *node);
+      private:
+      nodeValue process(TR::Node *node);
+
+      // operations
+      nodeValue performOp(TR::Node * node);
+      void performLongAdd (TR::Node * node);
+      void performLongSub (TR::Node * node);
+      void performLongMul (TR::Node * node);
+      void performLongDiv (TR::Node * node);
    };
 }
 

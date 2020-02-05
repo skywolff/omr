@@ -29,8 +29,8 @@
 #include <exception>
 
 namespace TR::TI {
-  void performOp(TR::Node * node, std::stack <TR::Node *> * operandStack);
-  void perform_iadd (TR::Node * node);
-  void perform_ladd (TR::Node * node);
+  
+
+  
 }
 #endif

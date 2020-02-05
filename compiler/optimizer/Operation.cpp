@@ -19,35 +19,34 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
 
-#include "optimizer/Operation.hpp"
+// #include "optimizer/Operation.hpp"
+#include "optimizer/TreeInterpreter.hpp"
 
-void TR::TI::perform_iadd (TR::Node * node){
-   node->setInt(node->getChild(0)->getInt()+node->getChild(1)->getInt());
-}
-
-void TR::TI::perform_ladd (TR::Node * node){
-   node->setLongInt(node->getChild(0)->getLongInt()+node->getChild(1)->getLongInt());
-}
-
-void TR::TI::performOp(TR::Node * node, std::stack <TR::Node *> * operandStack){
-
+TR::TI::nodeValue
+TR::TI::TreeInterpreter::performOp(TR::Node * node){
+   nodeValue dummy;
    switch (node->getOpCodeValue()){
-      case TR::iadd:
-         perform_iadd(node);
-      case TR::ladd:
-         perform_ladd(node);
-      case TR::istore:
-      case TR::lstore:
-      case TR::iload:
-      case TR::lload:
-      case TR::ireturn:
-      case TR::lreturn:
       case TR::BBStart:
+         return dummy;
       case TR::BBEnd:
+         return dummy;
       case TR::treetop:
-      case TR::iconst:
+         return dummy;
+
+      // long operations
       case TR::lconst:
-         return;
+         return dummy;
+      case TR::ladd:
+         performLongAdd(node);
+      case TR::lsub:
+         performLongSub(node);
+      case TR::lmul:
+         performLongMul(node);
+      case TR::ldiv:
+         performLongDiv(node);
+      case TR::lload:
+      case TR::lstore:
+      case TR::lreturn:
       default:
          throw std::runtime_error("Opcode unrecognized");
    }   
@@ -55,10 +54,30 @@ void TR::TI::performOp(TR::Node * node, std::stack <TR::Node *> * operandStack){
    int numChildren = node->getNumChildren();
    TR::Node *children[numChildren];
    for (int childI = 0; childI < numChildren; childI++){
-      children[childI] = operandStack->top();
-      operandStack->pop();
+      children[childI] = operandStack.top();
+      operandStack.pop();
    }
 }
 
-   
-   
+void
+TR::TI::TreeInterpreter::performLongAdd(TR::Node * node){
+   node->setLongInt(node->getChild(0)->getLongInt() + node->getChild(1)->getLongInt());
+}
+
+void
+TR::TI::TreeInterpreter::performLongSub(TR::Node * node)
+{
+   node->setLongInt(node->getChild(0)->getLongInt() - node->getChild(1)->getLongInt());
+}
+
+void
+TR::TI::TreeInterpreter::performLongMul(TR::Node * node)
+{
+   node->setLongInt(node->getChild(0)->getLongInt() * node->getChild(1)->getLongInt());
+}
+
+void
+TR::TI::TreeInterpreter::performLongDiv(TR::Node * node)
+{
+   node->setLongInt(node->getChild(0)->getLongInt() / node->getChild(1)->getLongInt());
+}

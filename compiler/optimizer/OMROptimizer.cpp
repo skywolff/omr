@@ -734,7 +734,6 @@ OMR::Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *metho
    {
    // zero opts table
    memset(_opts, 0, sizeof(_opts));
-   printf("OMROptimer\n");
 
 /*
  * Allow downstream projects to disable the default initialization of optimizations

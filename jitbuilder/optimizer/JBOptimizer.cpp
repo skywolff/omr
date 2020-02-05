@@ -157,7 +157,7 @@ Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *methodSymb
    {
    // Initialize individual optimizations
    _opts[OMR::treeInterpreter] =
-      new (comp->allocator()) TR::OptimizationManager(self(), TR::TreeInterpreter::create, OMR::treeInterpreter);
+      new (comp->allocator()) TR::OptimizationManager(self(), TR::TI::TreeInterpreter::create, OMR::treeInterpreter);
    // printf("_opts addr: %p\n", _opts);
    // printf("OMR::test: %d\n", OMR::test);
    // printf("_opts[OMR::test]: %p\n", _opts[OMR::test]);
