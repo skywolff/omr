@@ -81,7 +81,7 @@ TR::TI::TreeInterpreter::perform()
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
          process(treeTop->getNode());
    }
-
+   // traceMsg
    return 1;
 }
 
@@ -94,14 +94,17 @@ TR::TI::TreeInterpreter::optDetailString() const throw()
 TR::TI::VALUE
 TR::TI::TreeInterpreter::process(TR::Node *node)
 {
+   traceMsg(comp(), "processing node n%dn [%p]\n", node->getGlobalIndex(), node);
+
+   // node exists in the map, return value form map
+   if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end()){
+      traceMsg(comp(), "value exists in map; value = processing node n%dn [%p]\n", node->getGlobalIndex(), node);
+      return nodeValuesMap[node->getGlobalIndex()];
+   }
+
    int numChildren = node->getNumChildren();
    for (int i = 0; i < numChildren; i++){
       process(node->getChild(i));
    }
-   // if the node already exists in the map, return value form map
-   // else perform operation
-   if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end())
-      return nodeValuesMap[node->getGlobalIndex()];
-   else
-      return performOp(node);
+   return performOp(node);
 }

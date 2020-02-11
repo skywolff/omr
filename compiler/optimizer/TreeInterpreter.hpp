@@ -44,15 +44,15 @@ namespace TR::TI
    // dconst - double constant (64-bit ieee fp)
    // bconst - byte integer constant (8-bit signed 2's complement)
    // sconst - short integer constant (16-bit signed 2's complement)
-   std::string DATANAME[7] = {
-      "ADDRESS",
-      "INTEGER",
-      "LONG",
-      "FLOAT",
-      "DOUBLE",
-      "BYTE_INT",
-      "SHORT_INT" 
-   };
+   // std::string DATANAME[7] = {
+   //    "ADDRESS",
+   //    "INTEGER",
+   //    "LONG",
+   //    "FLOAT",
+   //    "DOUBLE",
+   //    "BYTE_INT",
+   //    "SHORT_INT" 
+   // };
    
    typedef enum {
       ADDRESS,
@@ -78,6 +78,7 @@ namespace TR::TI
       public:
       
       // std::stack <TR::Node *> operandStack;
+      // key value comparator, allocator
       std::map<ncount_t, VALUE> nodeValuesMap;
 
       TreeInterpreter(TR::OptimizationManager *manager);

@@ -25,6 +25,9 @@
 TR::TI::VALUE
 TR::TI::TreeInterpreter::performOp(TR::Node * node){
    VALUE operand1, operand2, result;
+   // make sure the children exists.
+   // TR_ASSERT_FATAL
+
    switch (node->getOpCodeValue()){
       case TR::BBStart:
          break;
@@ -64,7 +67,7 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
       case TR::lreturn:
          break;
       default:
-         throw std::runtime_error("Opcode unrecognized");
+         TR_ASSERT_FATAL(1, "Unexpected opcode for n%dn [%p]\n", node->getGlobalIndex(), node);
    }   
 
    // int numChildren = node->getNumChildren();
