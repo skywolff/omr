@@ -43,6 +43,7 @@ operandarraytests
 operandstacktests
 pointer
 pow2
+add
 recfib
 simple
 structarray

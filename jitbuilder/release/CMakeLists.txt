@@ -35,6 +35,7 @@ macro(create_jitbuilder_test target)
 endmacro(create_jitbuilder_test)
 
 # Basic Tests: These should run properly on all platforms.
+create_jitbuilder_test(add             cpp/samples/Add.cpp)
 create_jitbuilder_test(conditionals    cpp/samples/Conditionals.cpp)
 create_jitbuilder_test(isSupportedType cpp/samples/IsSupportedType.cpp)
 create_jitbuilder_test(iterfib         cpp/samples/IterativeFib.cpp)

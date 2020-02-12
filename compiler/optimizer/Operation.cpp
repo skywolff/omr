@@ -60,6 +60,16 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
          operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
+      case TR::lshl:
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.data.lconst = operand1.data.lconst << operand2.data.lconst;
+         break;
+      case TR::lshr:
+         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         result.data.lconst = operand1.data.lconst >> operand2.data.lconst;
+         break;
       case TR::lload:
          break;
       case TR::lstore:
