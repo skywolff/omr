@@ -85,10 +85,11 @@ class TreeInterpreter : public TR::Optimization
    virtual const char * optDetailString() const throw();
 
    private:
-   VALUE process(TR::Node *node);
+   void process(TR::Node *node);
 
    // operations
-   VALUE performOp(TR::Node * node);
+   void performOp(TR::Node * node);
+   char *dumpNodeToValueMap();
 };
 }
 

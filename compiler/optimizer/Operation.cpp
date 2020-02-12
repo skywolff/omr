@@ -22,7 +22,7 @@
 // #include "optimizer/Operation.hpp"
 #include "optimizer/TreeInterpreter.hpp"
 
-TR::TreeInterpreter::VALUE
+void
 TR::TreeInterpreter::performOp(TR::Node * node){
    VALUE operand1, operand2, result;
    // make sure the children exists.
@@ -82,5 +82,5 @@ TR::TreeInterpreter::performOp(TR::Node * node){
    //    operandStack.pop();
    // }
    nodeValueMap[node->getGlobalIndex()] = &result;
-   return result;
+   return;
 }

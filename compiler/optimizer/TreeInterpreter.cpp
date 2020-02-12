@@ -85,8 +85,13 @@ TR::TreeInterpreter::perform()
          ncount_t treeTopIndex = treeTopNode->getGlobalIndex();
          VALUE *treeTopValue = nodeValueMap[treeTopIndex];
          // printf("typeString: %s; dataString: %#.8\n", this->VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
+         // printf("treeTop n%dn [%p] processed, value(%s) = %#.8x\n",
+         //    treeTopIndex, treeTopNode, VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
+         // printf("%s\n", dumpNodeToValueMap());
+         
          traceMsg(comp(), "treeTop n%dn [%p] processed, value(%s) = %#.8x\n",
             treeTopIndex, treeTopNode, VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
+         traceMsg(comp(), "%s\n", dumpNodeToValueMap());
       }
    }
    return 1;
@@ -98,14 +103,11 @@ TR::TreeInterpreter::optDetailString() const throw()
    return "O^O TreeInterpreter: ";
    }
 
-TR::TreeInterpreter::VALUE
+void
 TR::TreeInterpreter::process(TR::Node *node)
 {
-
-   // node exists in the map, return value form map
    if (nodeValueMap.find(node->getGlobalIndex()) != nodeValueMap.end()){
       traceMsg(comp(), "\tprocessing node n%dn [%p], value found in map\n", node->getGlobalIndex(), node);
-      return *nodeValueMap[node->getGlobalIndex()];
    }
 
    int numChildren = node->getNumChildren();
@@ -113,5 +115,20 @@ TR::TreeInterpreter::process(TR::Node *node)
       process(node->getChild(i));
    }
    traceMsg(comp(), "\tprocessing node n%dn [%p], evaluating\n", node->getGlobalIndex(), node);
-   return performOp(node);
+   // traceMsg(comp(), "\t\tnodeDataType: %s\n", node->getDataType().getName(node->getDataType()));
+   performOp(node);
+   return;
+}
+
+char *
+TR::TreeInterpreter::dumpNodeToValueMap()
+{
+   char *mapString = (char *) malloc(2048);
+   char *endString = mapString;
+   for(auto e : nodeValueMap){
+      endString += sprintf(endString, "nodeGlobalIndex: n%dn;  ", e.first);
+      endString += sprintf(endString, "VALUE: {type = %s, data = {aconst = %#.8x, iconst = %d, lconst = %ld}}\n",
+         VALUETYPE_NAME[e.second->type], e.second->data.aconst, e.second->data.iconst, e.second->data.lconst);
+    }
+    return mapString;
 }
