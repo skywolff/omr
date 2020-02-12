@@ -37,61 +37,80 @@ namespace TR { class TreeTop; }
 
 namespace TR::TI
 {
-   // aconst - address constant (zero value means NULL)
-   // iconst - integer constant (32-bit signed 2's complement)
-   // lconst - long integer constant (64-bit signed 2's complement)
-   // fconst - float constant (32-bit ieee fp)
-   // dconst - double constant (64-bit ieee fp)
-   // bconst - byte integer constant (8-bit signed 2's complement)
-   // sconst - short integer constant (16-bit signed 2's complement)
-   // std::string DATANAME[7] = {
-   //    "ADDRESS",
-   //    "INTEGER",
-   //    "LONG",
-   //    "FLOAT",
-   //    "DOUBLE",
-   //    "BYTE_INT",
-   //    "SHORT_INT" 
-   // };
-   
-   typedef enum {
-      ADDRESS,
-      INTEGER,
-      LONG,
-      FLOAT,
-      DOUBLE,
-      BYTE_INT,
-      SHORT_INT 
-   }DATATYPE;
+// aconst - address constant (zero value means NULL)
+// iconst - integer constant (32-bit signed 2's complement)
+// lconst - long integer constant (64-bit signed 2's complement)
+// fconst - float constant (32-bit ieee fp)
+// dconst - double constant (64-bit ieee fp)
+// bconst - byte integer constant (8-bit signed 2's complement)
+// sconst - short integer constant (16-bit signed 2's complement)
 
-   typedef struct {
-      DATATYPE type;
-      union{
-         uintptrj_t  aconst;
-         int32_t     iconst;
-         int64_t     lconst; 
-      } data;
-   }VALUE;
-   
-   class TreeInterpreter : public TR::Optimization
-   {
-      public:
-      
-      // std::stack <TR::Node *> operandStack;
-      // key value comparator, allocator
-      std::map<ncount_t, VALUE> nodeValuesMap;
+typedef enum {
+   ADDRESS,
+   INTEGER,
+   LONG,
+   FLOAT,
+   DOUBLE,
+   BYTE_INT,
+   SHORT_INT
+} DATATYPE;
+typedef union{
+   uintptrj_t  aconst;
+   int32_t     iconst;
+   int64_t     lconst;
+} DATA;
 
-      TreeInterpreter(TR::OptimizationManager *manager);
-      static TR::Optimization *create(TR::OptimizationManager *manager);
-      virtual int32_t perform();
-      virtual const char * optDetailString() const throw();
+typedef struct {
+   DATATYPE type;
+   DATA data;
 
-      private:
-      VALUE process(TR::Node *node);
+   DATATYPE getType(){
+      return this->type;
+   }
 
-      // operations
-      VALUE performOp(TR::Node * node);
-   };
+   DATA getData(){
+      return this->data;
+   }
+
+   std::string getTypeString(){
+      std::string DATATYPENAME[] = {"ADDRESS", "INTEGER", "LONG", "FLOAT", "DOUBLE", "BYTE_INT", "SHORT_INT"};
+      return DATATYPENAME[this->type];
+   }
+
+   std::string getDataString(){
+      switch (this->type)
+      {
+      case(ADDRESS):
+         return std::to_string(data.aconst);
+      case(INTEGER):
+         return std::to_string(data.iconst);
+      case(LONG):
+         return std::to_string(data.lconst);
+      default:
+         TR_ASSERT_FATAL(1, "unexpected type for struct VALUE\n");
+      }
+   }
+} VALUE;
+
+class TreeInterpreter : public TR::Optimization
+{
+   public:
+
+   // std::stack <TR::Node *> operandStack;
+   // key value comparator, allocator
+   std::map<ncount_t, VALUE> nodeValuesMap;
+
+   TreeInterpreter(TR::OptimizationManager *manager);
+   static TR::Optimization *create(TR::OptimizationManager *manager);
+   virtual int32_t perform();
+   virtual const char * optDetailString() const throw();
+
+   private:
+   VALUE process(TR::Node *node);
+
+   // operations
+   VALUE performOp(TR::Node * node);
+};
 }
 
 #endif

@@ -79,9 +79,19 @@ TR::TI::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
-         process(treeTop->getNode());
+      TR::Node *treeTopNode = treeTop->getNode();
+      process(treeTopNode);
+
+      if (treeTopNode->getOpCodeValue() != TR::BBStart && treeTopNode->getOpCodeValue() != TR::BBEnd) {
+         ncount_t treeTopIndex = treeTopNode->getGlobalIndex();
+         VALUE *treeTopValue = &nodeValuesMap[treeTopNode->getGlobalIndex()];
+         std::string typeString = treeTopValue->getTypeString();
+         std::string dataString = treeTopValue->getDataString();
+         printf("typeString: %s; dataString: %s\n", typeString, dataString);
+         traceMsg(comp(), "treeTop n%dn [%p] processed, value(%s) = %s\n",
+            treeTopIndex, treeTopNode, typeString, dataString);
+      }
    }
-   // traceMsg
    return 1;
 }
 
@@ -94,11 +104,10 @@ TR::TI::TreeInterpreter::optDetailString() const throw()
 TR::TI::VALUE
 TR::TI::TreeInterpreter::process(TR::Node *node)
 {
-   traceMsg(comp(), "processing node n%dn [%p]\n", node->getGlobalIndex(), node);
 
    // node exists in the map, return value form map
    if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end()){
-      traceMsg(comp(), "value exists in map; value = processing node n%dn [%p]\n", node->getGlobalIndex(), node);
+      traceMsg(comp(), "\tprocessing node n%dn [%p], value found in map\n", node->getGlobalIndex(), node);
       return nodeValuesMap[node->getGlobalIndex()];
    }
 
@@ -106,5 +115,6 @@ TR::TI::TreeInterpreter::process(TR::Node *node)
    for (int i = 0; i < numChildren; i++){
       process(node->getChild(i));
    }
+   traceMsg(comp(), "\tprocessing node n%dn [%p], evaluating\n", node->getGlobalIndex(), node);
    return performOp(node);
 }
