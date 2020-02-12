@@ -22,7 +22,6 @@
 #include "optimizer/TreeInterpreter.hpp"
 #include <stddef.h>
 #include <stdint.h>
-#include <map>
 #include "infra/forward_list.hpp"
 #include "codegen/CodeGenerator.hpp"
 #include "env/FrontEnd.hpp"
@@ -84,7 +83,7 @@ TR::TI::TreeInterpreter::perform()
 
       if (treeTopNode->getOpCodeValue() != TR::BBStart && treeTopNode->getOpCodeValue() != TR::BBEnd) {
          ncount_t treeTopIndex = treeTopNode->getGlobalIndex();
-         VALUE *treeTopValue = &nodeValuesMap[treeTopNode->getGlobalIndex()];
+         VALUE *treeTopValue = nodeValueMap[treeTopNode->getGlobalIndex()];
          std::string typeString = treeTopValue->getTypeString();
          std::string dataString = treeTopValue->getDataString();
          printf("typeString: %s; dataString: %s\n", typeString, dataString);
@@ -106,9 +105,9 @@ TR::TI::TreeInterpreter::process(TR::Node *node)
 {
 
    // node exists in the map, return value form map
-   if (nodeValuesMap.find(node->getGlobalIndex()) != nodeValuesMap.end()){
+   if (nodeValueMap.find(node->getGlobalIndex()) != nodeValueMap.end()){
       traceMsg(comp(), "\tprocessing node n%dn [%p], value found in map\n", node->getGlobalIndex(), node);
-      return nodeValuesMap[node->getGlobalIndex()];
+      return *nodeValueMap[node->getGlobalIndex()];
    }
 
    int numChildren = node->getNumChildren();

@@ -80,15 +80,16 @@ typedef struct {
    std::string getDataString(){
       switch (this->type)
       {
-      case(ADDRESS):
-         return std::to_string(data.aconst);
-      case(INTEGER):
-         return std::to_string(data.iconst);
-      case(LONG):
-         return std::to_string(data.lconst);
-      default:
-         TR_ASSERT_FATAL(1, "unexpected type for struct VALUE\n");
+         case(ADDRESS):
+            return std::to_string(data.aconst);
+         case(INTEGER):
+            return std::to_string(data.iconst);
+         case(LONG):
+            return std::to_string(data.lconst);
+         default:
+            TR_ASSERT_FATAL(1, "unexpected type for struct VALUE\n");
       }
+      return "";
    }
 } VALUE;
 
@@ -96,9 +97,27 @@ class TreeInterpreter : public TR::Optimization
 {
    public:
 
-   // std::stack <TR::Node *> operandStack;
    // key value comparator, allocator
-   std::map<ncount_t, VALUE> nodeValuesMap;
+   // std::map<ncount_t, VALUE> nodeValueMap;
+
+   // typedef TR::typed_allocator<std::pair<int32_t const, int32_t>, TR::Region&> UDMapAllocator;
+   // typedef std::less<int32_t> UDMapComparator;
+   // typedef std::map<int32_t, int32_t, UDMapComparator, UDMapAllocator> UsesToBeFixedMap;
+   // typedef std::map<int32_t, int32_t, UDMapComparator, UDMapAllocator> EquivalentDefMap;
+   // UsesToBeFixedMap usesToBeFixed((UDMapComparator()), UDMapAllocator(trMemory()->currentStackRegion()));
+   // EquivalentDefMap equivalentDefs((UDMapComparator()), UDMapAllocator(trMemory()->currentStackRegion()));
+
+   // typedef std::pair<ncount_t const, TR::TreeTop* > ReadBarToTreeTopMapEntry;
+   // typedef TR::typed_allocator<ReadBarToTreeTopMapEntry, TR::Region &> ReadBarToTreeTopMapAlloc;
+   // typedef std::map<ncount_t, TR::TreeTop *, std::less<ncount_t>, ReadBarToTreeTopMapAlloc> ReadBarToTreeTopMap;
+   // ReadBarToTreeTopMap rdbar2ttMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion());
+
+   typedef std::pair<ncount_t const, TR::TI::VALUE *> NodeToValueMapEntry;
+   typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
+   typedef std::map<ncount_t, TR::TI::VALUE *, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
+   NodeToValueMap nodeValueMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion()));
+   
+
 
    TreeInterpreter(TR::OptimizationManager *manager);
    static TR::Optimization *create(TR::OptimizationManager *manager);

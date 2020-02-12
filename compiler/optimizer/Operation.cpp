@@ -41,23 +41,23 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
          result.data.lconst = node->getLongInt();
          break;
       case TR::ladd:
-         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.data.lconst = operand1.data.lconst + operand2.data.lconst;
          break;
       case TR::lsub:
-         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.data.lconst = operand1.data.lconst - operand2.data.lconst;
          break;
       case TR::lmul:
-         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.data.lconst = operand1.data.lconst * operand2.data.lconst;
          break;
       case TR::ldiv:
-         operand1 = nodeValuesMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = nodeValuesMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
       case TR::lload:
@@ -76,6 +76,6 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
    //    children[childI] = operandStack.top();
    //    operandStack.pop();
    // }
-   nodeValuesMap[node->getGlobalIndex()] = result;
+   nodeValueMap[node->getGlobalIndex()] = &result;
    return result;
 }
