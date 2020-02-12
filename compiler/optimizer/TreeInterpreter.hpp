@@ -35,88 +35,48 @@ namespace TR { class Block; }
 namespace TR { class OptimizationManager; }
 namespace TR { class TreeTop; }
 
-namespace TR::TI
+namespace TR
 {
-// aconst - address constant (zero value means NULL)
-// iconst - integer constant (32-bit signed 2's complement)
-// lconst - long integer constant (64-bit signed 2's complement)
-// fconst - float constant (32-bit ieee fp)
-// dconst - double constant (64-bit ieee fp)
-// bconst - byte integer constant (8-bit signed 2's complement)
-// sconst - short integer constant (16-bit signed 2's complement)
 
-typedef enum {
-   ADDRESS,
-   INTEGER,
-   LONG,
-   FLOAT,
-   DOUBLE,
-   BYTE_INT,
-   SHORT_INT
-} DATATYPE;
-typedef union{
-   uintptrj_t  aconst;
-   int32_t     iconst;
-   int64_t     lconst;
-} DATA;
-
-typedef struct {
-   DATATYPE type;
-   DATA data;
-
-   DATATYPE getType(){
-      return this->type;
-   }
-
-   DATA getData(){
-      return this->data;
-   }
-
-   std::string getTypeString(){
-      std::string DATATYPENAME[] = {"ADDRESS", "INTEGER", "LONG", "FLOAT", "DOUBLE", "BYTE_INT", "SHORT_INT"};
-      return DATATYPENAME[this->type];
-   }
-
-   std::string getDataString(){
-      switch (this->type)
-      {
-         case(ADDRESS):
-            return std::to_string(data.aconst);
-         case(INTEGER):
-            return std::to_string(data.iconst);
-         case(LONG):
-            return std::to_string(data.lconst);
-         default:
-            TR_ASSERT_FATAL(1, "unexpected type for struct VALUE\n");
-      }
-      return "";
-   }
-} VALUE;
 
 class TreeInterpreter : public TR::Optimization
 {
    public:
+   // aconst - address constant (zero value means NULL)
+   // iconst - integer constant (32-bit signed 2's complement)
+   // lconst - long integer constant (64-bit signed 2's complement)
+   // fconst - float constant (32-bit ieee fp)
+   // dconst - double constant (64-bit ieee fp)
+   // bconst - byte integer constant (8-bit signed 2's complement)
+   // sconst - short integer constant (16-bit signed 2's complement)
+   char VALUETYPE_NAME[7][10] = {"ADDRESS", "INTEGER", "LONG", "FLOAT", "DOUBLE", "BYTE_INT", "SHORT_INT"};
+   typedef enum {
+      ADDRESS,
+      INTEGER,
+      LONG,
+      FLOAT,
+      DOUBLE,
+      BYTE_INT,
+      SHORT_INT
+   } DATATYPE;
+   typedef union{
+      uintptrj_t  aconst;
+      int32_t     iconst;
+      int64_t     lconst;
+   } DATA;
+   
+   typedef struct {
+      DATATYPE type;
+      DATA data;
+   } VALUE;
+
 
    // key value comparator, allocator
    // std::map<ncount_t, VALUE> nodeValueMap;
-
-   // typedef TR::typed_allocator<std::pair<int32_t const, int32_t>, TR::Region&> UDMapAllocator;
-   // typedef std::less<int32_t> UDMapComparator;
-   // typedef std::map<int32_t, int32_t, UDMapComparator, UDMapAllocator> UsesToBeFixedMap;
-   // typedef std::map<int32_t, int32_t, UDMapComparator, UDMapAllocator> EquivalentDefMap;
-   // UsesToBeFixedMap usesToBeFixed((UDMapComparator()), UDMapAllocator(trMemory()->currentStackRegion()));
-   // EquivalentDefMap equivalentDefs((UDMapComparator()), UDMapAllocator(trMemory()->currentStackRegion()));
-
-   // typedef std::pair<ncount_t const, TR::TreeTop* > ReadBarToTreeTopMapEntry;
-   // typedef TR::typed_allocator<ReadBarToTreeTopMapEntry, TR::Region &> ReadBarToTreeTopMapAlloc;
-   // typedef std::map<ncount_t, TR::TreeTop *, std::less<ncount_t>, ReadBarToTreeTopMapAlloc> ReadBarToTreeTopMap;
-   // ReadBarToTreeTopMap rdbar2ttMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion());
-
-   typedef std::pair<ncount_t const, TR::TI::VALUE *> NodeToValueMapEntry;
+   typedef std::pair<ncount_t const, VALUE *> NodeToValueMapEntry;
    typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
-   typedef std::map<ncount_t, TR::TI::VALUE *, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
-   NodeToValueMap nodeValueMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion()));
-   
+   typedef std::map<ncount_t, VALUE *, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
+   NodeToValueMap nodeValueMap;
 
 
    TreeInterpreter(TR::OptimizationManager *manager);

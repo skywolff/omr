@@ -22,8 +22,8 @@
 // #include "optimizer/Operation.hpp"
 #include "optimizer/TreeInterpreter.hpp"
 
-TR::TI::VALUE
-TR::TI::TreeInterpreter::performOp(TR::Node * node){
+TR::TreeInterpreter::VALUE
+TR::TreeInterpreter::performOp(TR::Node * node){
    VALUE operand1, operand2, result;
    // make sure the children exists.
    // TR_ASSERT_FATAL
@@ -38,26 +38,31 @@ TR::TI::TreeInterpreter::performOp(TR::Node * node){
 
       // long operations
       case TR::lconst:
+         result.type = LONG;
          result.data.lconst = node->getLongInt();
          break;
       case TR::ladd:
          operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.type = LONG;
          result.data.lconst = operand1.data.lconst + operand2.data.lconst;
          break;
       case TR::lsub:
          operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.type = LONG;
          result.data.lconst = operand1.data.lconst - operand2.data.lconst;
          break;
       case TR::lmul:
          operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.type = LONG;
          result.data.lconst = operand1.data.lconst * operand2.data.lconst;
          break;
       case TR::ldiv:
          operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.type = LONG;
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
       case TR::lload:

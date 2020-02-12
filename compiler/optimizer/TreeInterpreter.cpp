@@ -61,20 +61,20 @@
 
 
 TR::Optimization *
-TR::TI::TreeInterpreter::create(TR::OptimizationManager *manager)
+TR::TreeInterpreter::create(TR::OptimizationManager *manager)
    {
-   return new (manager->allocator()) TR::TI::TreeInterpreter(manager);
+   return new (manager->allocator()) TR::TreeInterpreter(manager);
    }
 
 
-TR::TI::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
-   : TR::Optimization(manager)
+TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
+   : TR::Optimization(manager),
+   nodeValueMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion())
 {
-   // printf("TreeInterpreter constructor, manager address: %p\n", manager);
 }
 
 int32_t
-TR::TI::TreeInterpreter::perform()
+TR::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
@@ -83,25 +83,23 @@ TR::TI::TreeInterpreter::perform()
 
       if (treeTopNode->getOpCodeValue() != TR::BBStart && treeTopNode->getOpCodeValue() != TR::BBEnd) {
          ncount_t treeTopIndex = treeTopNode->getGlobalIndex();
-         VALUE *treeTopValue = nodeValueMap[treeTopNode->getGlobalIndex()];
-         std::string typeString = treeTopValue->getTypeString();
-         std::string dataString = treeTopValue->getDataString();
-         printf("typeString: %s; dataString: %s\n", typeString, dataString);
-         traceMsg(comp(), "treeTop n%dn [%p] processed, value(%s) = %s\n",
-            treeTopIndex, treeTopNode, typeString, dataString);
+         VALUE *treeTopValue = nodeValueMap[treeTopIndex];
+         // printf("typeString: %s; dataString: %#.8\n", this->VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
+         traceMsg(comp(), "treeTop n%dn [%p] processed, value(%s) = %#.8x\n",
+            treeTopIndex, treeTopNode, VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
       }
    }
    return 1;
 }
 
 const char *
-TR::TI::TreeInterpreter::optDetailString() const throw()
+TR::TreeInterpreter::optDetailString() const throw()
    {
    return "O^O TreeInterpreter: ";
    }
 
-TR::TI::VALUE
-TR::TI::TreeInterpreter::process(TR::Node *node)
+TR::TreeInterpreter::VALUE
+TR::TreeInterpreter::process(TR::Node *node)
 {
 
    // node exists in the map, return value form map
