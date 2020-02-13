@@ -42,17 +42,43 @@ Pow2Method::Pow2Method(OMR::JitBuilder::TypeDictionary *types)
 bool
 Pow2Method::buildIL()
    {
-   // Store("a",
-   //    ConstInt64(1));
+   Store("a",
+      ConstInt64(1));
 
-   // Store("b",
-   //    ConstInt64(1));
+   Store("b",
+      ConstInt64(1));
+
+   Store("i",
+      Load("n"));
+
+   Store("keepIterating",
+      GreaterThan(
+         Load("i"),
+         ConstInt64(-1)));
+
+   OMR::JitBuilder::IlBuilder *loopBody = NULL;
+   WhileDoLoop("keepIterating", &loopBody);
+
+   loopBody->Store("a",
+   loopBody->   Load("b"));
+
+   loopBody->Store("b",
+   loopBody->   Add(
+   loopBody->      Load("a"),
+   loopBody->      Load("b")));
+
+   loopBody->Store("i",
+   loopBody->   Sub(
+   loopBody->      Load("i"),
+   loopBody->      ConstInt64(1)));
+
+   loopBody->Store("keepIterating",
+   loopBody->   GreaterThan(
+   loopBody->      Load("i"),
+   loopBody->      ConstInt64(-1)));
 
    Return(
-      Add(
-         ConstInt64(7),
-         ConstInt64(2)
-         ));
+      Load("a"));
 
    return true;
    }
@@ -84,9 +110,12 @@ main(int argc, char *argv[])
 
    printf("Step 4: invoke compiled code\n");
    Pow2FunctionType *pow2 = (Pow2FunctionType *)entry;
-   int64_t r = pow2((int64_t) 45);
+   int32_t n = (argc > 1) ? atoi(argv[1]) : 6000000;
+   int64_t r;
+   for (int32_t i=0;i < n;i++)
+      r = pow2((int64_t) 45);
 
-   printf("7 + 2 is %ld\n", r);
+   printf("pow2(45) is %lld\n", r);
 
    printf ("Step 5: shutdown JIT\n");
    shutdownJit();
