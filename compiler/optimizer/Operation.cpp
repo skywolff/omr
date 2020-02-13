@@ -26,7 +26,7 @@
 void
 TR::TreeInterpreter::performOp(TR::Node * node){
    VALUE operand1, operand2, result;
-   memset(&result.data, 0, sizeof(VALUE));
+   memset(&result, 0, sizeof(VALUE));
    // make sure the children exists.
    // TR_ASSERT_FATAL
 
