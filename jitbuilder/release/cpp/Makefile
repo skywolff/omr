@@ -48,6 +48,7 @@ ALL_TESTS = \
             operandstacktests \
             pointer \
             pow2 \
+            addMethod \
             recfib \
             simple \
             structarray \
@@ -71,6 +72,7 @@ common_goal: $(ALL_TESTS)
 	./iterfib
 	./nestedloop
 	./pow2
+	./addMethod
 	./simple
 	./toiltype
 	./worklist
@@ -249,6 +251,12 @@ pow2 : $(LIBJITBUILDER) Pow2.o
 	$(CXX) -g -fno-rtti -o $@ Pow2.o -L$(LIBJITBUILDERDIR) -ljitbuilder -ldl
 
 Pow2.o: $(SAMPLE_SRC)/Pow2.cpp $(SAMPLE_SRC)/Pow2.hpp
+	$(CXX) -o $@ $(CXXFLAGS) $<
+
+addMethod : $(LIBJITBUILDER) AddMethod.o
+	$(CXX) -g -fno-rtti -o $@ AddMethod.o -L$(LIBJITBUILDERDIR) -ljitbuilder -ldl
+
+AddMethod.o: $(SAMPLE_SRC)/AddMethod.cpp $(SAMPLE_SRC)/AddMethod.hpp
 	$(CXX) -o $@ $(CXXFLAGS) $<
 
 
