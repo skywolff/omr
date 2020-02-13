@@ -79,20 +79,15 @@ TR::TreeInterpreter::perform()
    TR::TreeTop *firstTree = comp()->getStartTree();
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
       TR::Node *treeTopNode = treeTop->getNode();
+      traceMsg(comp(), "walking treeTop n%dn\n", treeTopNode->getGlobalIndex());
       process(treeTopNode);
-
-      if (treeTopNode->getOpCodeValue() != TR::BBStart && treeTopNode->getOpCodeValue() != TR::BBEnd) {
-         ncount_t treeTopIndex = treeTopNode->getGlobalIndex();
-         VALUE *treeTopValue = nodeValueMap[treeTopIndex];
-         // printf("typeString: %s; dataString: %#.8\n", this->VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
-         // printf("treeTop n%dn [%p] processed, value(%s) = %#.8x\n",
-         //    treeTopIndex, treeTopNode, VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
-         // printf("%s\n", dumpNodeToValueMap());
-         
-         traceMsg(comp(), "treeTop n%dn [%p] processed, value(%s) = %#.8x\n",
-            treeTopIndex, treeTopNode, VALUETYPE_NAME[treeTopValue->type], treeTopValue->data.lconst);
-         traceMsg(comp(), "%s\n", dumpNodeToValueMap());
+      traceMsg(comp(), "%s\n", dumpNodeToValueMap());
+      if (treeTopNode->getOpCodeValue() == TR::treetop){
+         VALUE treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
+         traceMsg(comp(), "treeTop n%dn VALUE(%s) = 0x%.8X\n",
+            treeTopNode->getGlobalIndex(), VALUETYPE_NAME[treeTopValue.type], treeTopValue.data);
       }
+      traceMsg(comp(), "------------------------\n");
    }
    return 1;
 }
@@ -124,11 +119,14 @@ char *
 TR::TreeInterpreter::dumpNodeToValueMap()
 {
    char *mapString = (char *) malloc(2048);
-   char *endString = mapString;
+   char *stringp = mapString;
+   stringp += sprintf(stringp, "  nodeToValueMap DUMP:\n");
    for(auto e : nodeValueMap){
-      endString += sprintf(endString, "nodeGlobalIndex: n%dn;  ", e.first);
-      endString += sprintf(endString, "VALUE: {type = %s, data = {aconst = %#.8x, iconst = %d, lconst = %ld}}\n",
-         VALUETYPE_NAME[e.second->type], e.second->data.aconst, e.second->data.iconst, e.second->data.lconst);
+      stringp += sprintf(stringp, "\tnodeGlobalIndex: n%dn;  ", e.first);
+      // stringp += sprintf(stringp, "VALUE: {type = %s, data = {aconst = %#.8x, iconst = %d, lconst = %ld}}\n",
+         // VALUETYPE_NAME[e.second.type], e.second.data.aconst, e.second.data.iconst, e.second.data.lconst);
+      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X}\n",
+         VALUETYPE_NAME[e.second.type], e.second.data);
     }
     return mapString;
 }

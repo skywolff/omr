@@ -21,10 +21,12 @@
 
 // #include "optimizer/Operation.hpp"
 #include "optimizer/TreeInterpreter.hpp"
+#include <cstring>
 
 void
 TR::TreeInterpreter::performOp(TR::Node * node){
    VALUE operand1, operand2, result;
+   memset(&result.data, 0, sizeof(VALUE));
    // make sure the children exists.
    // TR_ASSERT_FATAL
 
@@ -42,26 +44,26 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          result.data.lconst = node->getLongInt();
          break;
       case TR::ladd:
-         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = LONG;
          result.data.lconst = operand1.data.lconst + operand2.data.lconst;
          break;
       case TR::lsub:
-         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = LONG;
          result.data.lconst = operand1.data.lconst - operand2.data.lconst;
          break;
       case TR::lmul:
-         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = LONG;
          result.data.lconst = operand1.data.lconst * operand2.data.lconst;
          break;
       case TR::ldiv:
-         operand1 = *nodeValueMap[node->getChild(0)->getGlobalIndex()];
-         operand2 = *nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = LONG;
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
@@ -81,6 +83,6 @@ TR::TreeInterpreter::performOp(TR::Node * node){
    //    children[childI] = operandStack.top();
    //    operandStack.pop();
    // }
-   nodeValueMap[node->getGlobalIndex()] = &result;
+   nodeValueMap[node->getGlobalIndex()] = result;
    return;
 }

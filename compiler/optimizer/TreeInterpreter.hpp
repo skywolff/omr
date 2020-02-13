@@ -73,9 +73,9 @@ class TreeInterpreter : public TR::Optimization
 
    // key value comparator, allocator
    // std::map<ncount_t, VALUE> nodeValueMap;
-   typedef std::pair<ncount_t const, VALUE *> NodeToValueMapEntry;
+   typedef std::pair<ncount_t const, VALUE> NodeToValueMapEntry;
    typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
-   typedef std::map<ncount_t, VALUE *, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
+   typedef std::map<ncount_t, VALUE, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
    NodeToValueMap nodeValueMap;
 
 
