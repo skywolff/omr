@@ -118,7 +118,7 @@ TR::TreeInterpreter::process(TR::Node *node)
 char *
 TR::TreeInterpreter::dumpNodeToValueMap()
 {
-   char *mapString = (char *) malloc(2048);
+   char *mapString = (char *) malloc(65536);
    char *stringp = mapString;
    stringp += sprintf(stringp, "  nodeToValueMap DUMP:\n");
    for(auto e : nodeValueMap){

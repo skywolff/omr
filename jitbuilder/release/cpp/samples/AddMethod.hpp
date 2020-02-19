@@ -26,7 +26,7 @@
 
 #include "JitBuilder.hpp"
 
-typedef int64_t (AddFunctionType)();
+typedef int64_t (AddFunctionType)(int64_t, int64_t);
 
 class AddMethod : public OMR::JitBuilder::MethodBuilder
    {

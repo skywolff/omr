@@ -34,17 +34,21 @@ AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
    DefineLine(LINETOSTR(__LINE__));
    DefineFile(__FILE__);
 
-   DefineName("addMethod");
+   DefineName("pow2");
+   DefineParameter("a", Int64);
+   DefineParameter("b", Int64);
    DefineReturnType(Int64);
    }
 
 bool
 AddMethod::buildIL()
    {
+   Store("c", Load("a"));
+   Store("d", Load("b"));
    Return(
       Add(
-         ConstInt64(7),
-         ConstInt64(2)
+         Load("c"),
+         Load("d")
          ));
 
    return true;
@@ -54,6 +58,10 @@ AddMethod::buildIL()
 int
 main(int argc, char *argv[])
    {
+   if(argc != 3) {
+      printf("Use the format 'path/to/add_method a b', where a and b are integers\n");
+      exit(-1);
+   }
    printf("Step 1: initialize JIT\n");
    bool initialized = initializeJit();
    if (!initialized)
@@ -77,9 +85,10 @@ main(int argc, char *argv[])
 
    printf("Step 4: invoke compiled code\n");
    AddFunctionType *addMethod = (AddFunctionType *)entry;
-   int64_t r = addMethod();
+   int64_t a = atoi(argv[1]), b = atoi(argv[2]);
+   int64_t r = addMethod(a,b);
 
-   printf("7 + 2 is %ld\n", r);
+   printf("addMethod(%ld, %ld) == %ld\n", a, b, r);
 
    printf ("Step 5: shutdown JIT\n");
    shutdownJit();

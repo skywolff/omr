@@ -68,10 +68,13 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
       case TR::lload:
+         result.data.lconst = (int64_t)node->getSymbol();
          break;
       case TR::lstore:
+         // node->setSymbolReference(comp()->getSymRefTab()->createSymbolReference(TR::Symbol::createShadow(comp()->trHeapMemory(), node->getDataType())));
          break;
       case TR::lreturn:
+         result.data.lconst = nodeValueMap[node->getChild(0)->getGlobalIndex()].data.lconst;
          break;
       default:
          TR_ASSERT_FATAL(1, "Unexpected opcode for n%dn [%p]\n", node->getGlobalIndex(), node);
