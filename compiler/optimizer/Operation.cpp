@@ -40,49 +40,51 @@ TR::TreeInterpreter::performOp(TR::Node * node){
 
       // long operations
       case TR::lconst:
-         result.type = LONG;
+         result.type = Int64;
          result.data.lconst = node->getLongInt();
          break;
       case TR::ladd:
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = LONG;
+         result.type = Int64;
          result.data.lconst = operand1.data.lconst + operand2.data.lconst;
          break;
       case TR::lsub:
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = LONG;
+         result.type = Int64;
          result.data.lconst = operand1.data.lconst - operand2.data.lconst;
          break;
       case TR::lmul:
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = LONG;
+         result.type = Int64;
          result.data.lconst = operand1.data.lconst * operand2.data.lconst;
          break;
       case TR::ldiv:
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = LONG;
+         result.type = Int64;
          result.data.lconst = operand1.data.lconst / operand2.data.lconst;
          break;
       case TR::lload:
+         result = symbolTable[node->getSymbol()];
          break;
       case TR::lstore:
+         printf("store:\n");
+         printf("symbol: %ld\n", node->getSymbol());
+         printf("symbolreference: %ld %s %x\n", node->getSymbolReference(), node->getSymbolReference(), node->getSymbolReference());
+         printf("value: %ld\n", node->getFirstChild()->getLongInt());
+         printf("\n");
+         // map symbol ptr to VALUE of the store
+         symbolTable[node->getSymbol()] = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          break;
       case TR::lreturn:
          break;
       default:
          TR_ASSERT_FATAL(1, "Unexpected opcode for n%dn [%p]\n", node->getGlobalIndex(), node);
-   }   
-
-   // int numChildren = node->getNumChildren();
-   // TR::Node *children[numChildren];
-   // for (int childI = 0; childI < numChildren; childI++){
-   //    children[childI] = operandStack.top();
-   //    operandStack.pop();
-   // }
-   nodeValueMap[node->getGlobalIndex()] = result;
+   }
+   if (node->getReferenceCount() != 0)
+      nodeValueMap[node->getGlobalIndex()] = result;
    return;
 }

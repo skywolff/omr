@@ -41,11 +41,16 @@ AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
 bool
 AddMethod::buildIL()
    {
+   Store("a",
+      ConstInt64(7));
+
+   Store("b",
+      ConstInt64(2));
+
    Return(
       Add(
-         ConstInt64(7),
-         ConstInt64(2)
-         ));
+         Load("a"),
+         Load("b")));
 
    return true;
    }

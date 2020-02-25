@@ -49,15 +49,25 @@ class TreeInterpreter : public TR::Optimization
    // dconst - double constant (64-bit ieee fp)
    // bconst - byte integer constant (8-bit signed 2's complement)
    // sconst - short integer constant (16-bit signed 2's complement)
-   char VALUETYPE_NAME[7][10] = {"ADDRESS", "INTEGER", "LONG", "FLOAT", "DOUBLE", "BYTE_INT", "SHORT_INT"};
+   char VALUETYPE_NAME[8][10] = {
+      "NoType",
+      "Int8",
+      "Int16",
+      "Int32",
+      "Int64",
+      "Float",
+      "Double",
+      "Address",
+   };
    typedef enum {
-      ADDRESS,
-      INTEGER,
-      LONG,
-      FLOAT,
-      DOUBLE,
-      BYTE_INT,
-      SHORT_INT
+      NoType=0,
+      Int8,
+      Int16,
+      Int32,
+      Int64,
+      Float,
+      Double,
+      Address,
    } DATATYPE;
    typedef union{
       uintptrj_t  aconst;
@@ -71,12 +81,15 @@ class TreeInterpreter : public TR::Optimization
    } VALUE;
 
 
-   // key value comparator, allocator
-   // std::map<ncount_t, VALUE> nodeValueMap;
    typedef std::pair<ncount_t const, VALUE> NodeToValueMapEntry;
    typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
    typedef std::map<ncount_t, VALUE, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
    NodeToValueMap nodeValueMap;
+
+   typedef std::pair<TR::Symbol * const, VALUE> SymbolTableEntry;
+   typedef TR::typed_allocator<SymbolTableEntry, TR::Region&> SymbolTableAlloc;
+   typedef std::map<TR::Symbol *, VALUE, std::less<TR::Symbol *>, SymbolTableAlloc> SymbolTable;
+   SymbolTable symbolTable;
 
 
    TreeInterpreter(TR::OptimizationManager *manager);
@@ -89,7 +102,8 @@ class TreeInterpreter : public TR::Optimization
 
    // operations
    void performOp(TR::Node * node);
-   char *dumpNodeToValueMap();
+   void dumpNodeToValueMap();
+   void dumpSymbolTable();
 };
 }
 
