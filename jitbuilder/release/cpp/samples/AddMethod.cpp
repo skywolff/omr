@@ -34,7 +34,7 @@ AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
    DefineLine(LINETOSTR(__LINE__));
    DefineFile(__FILE__);
 
-   DefineName("pow2");
+   DefineName("addMethod");
    DefineParameter("a", Int64);
    DefineParameter("b", Int64);
    DefineReturnType(Int64);
@@ -59,7 +59,7 @@ int
 main(int argc, char *argv[])
    {
    if(argc != 3) {
-      printf("Use the format 'path/to/add_method a b', where a and b are integers\n");
+      printf("Use the format 'path/to/addMethod a b', where a and b are integers\n");
       exit(-1);
    }
    printf("Step 1: initialize JIT\n");
