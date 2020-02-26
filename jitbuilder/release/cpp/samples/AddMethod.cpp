@@ -26,6 +26,21 @@
 #include <stdint.h>
 #include <errno.h>
 
+#include "codegen/CodeGenerator.hpp"
+#include "compile/CompilationTypes.hpp"
+#include "compile/Method.hpp"
+#include "control/CompileMethod.hpp"
+#include "env/CompilerEnv.hpp"
+#include "env/FrontEnd.hpp"
+#include "env/IO.hpp"
+#include "env/RawAllocator.hpp"
+#include "ilgen/IlGeneratorMethodDetails_inlines.hpp"
+#include "ilgen/MethodBuilder.hpp"
+#include "ilgen/TypeDictionary.hpp"
+#include "runtime/CodeCache.hpp"
+#include "runtime/Runtime.hpp"
+#include "runtime/JBJitConfig.hpp"
+
 #include "AddMethod.hpp"
 
 AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
@@ -47,10 +62,18 @@ AddMethod::buildIL()
    Store("b",
       ConstInt64(2));
 
-   Return(
+   Store("c",
       Add(
          Load("a"),
          Load("b")));
+
+   Store("d",
+      Mul(
+         Load("a"),
+         Load("c")));
+   
+   Return(
+      Load("d"));
 
    return true;
    }
@@ -74,20 +97,60 @@ main(int argc, char *argv[])
    AddMethod AddMethod(&types);
    void *entry=0;
    int32_t rc = compileMethodBuilder(&AddMethod, &entry);
-   if (rc != 0)
-      {
-      fprintf(stderr,"FAIL: compilation error %d\n", rc);
-      exit(-2);
-      }
+   // if (rc != 0)
+   //    {
+   //    fprintf(stderr,"FAIL: compilation error %d\n", rc);
+   //    exit(-2);
+   //    }
+   // printf("Step 4: invoke compiled code\n");
+   // AddFunctionType *addMethod = (AddFunctionType *)entry;
+   // int64_t r = addMethod();
 
-   printf("Step 4: invoke compiled code\n");
-   AddFunctionType *addMethod = (AddFunctionType *)entry;
-   int64_t r = addMethod();
+   int32_t rc = interpretMethodBuilder(&AddMethod, &entry);
 
-   printf("7 + 2 is %ld\n", r);
+   // printf("7 + 2 is %ld\n", r);
 
-   printf ("Step 5: shutdown JIT\n");
-   shutdownJit();
+   // printf ("Step 5: shutdown JIT\n");
+   // shutdownJit();
 
-   printf("PASS\n");
+   // printf("PASS\n");
    }
+
+int32_t interpretMethodBuilder(OMR::JitBuilder::MethodBuilder * methodBuilder, void ** entryPoint)
+{
+   
+   TR::MethodBuilder *m = static_cast<TR::MethodBuilder *>(static_cast<TR::IlBuilder *>(methodBuilder != NULL ? methodBuilder->_impl : NULL))
+
+   TR::ResolvedMethod resolvedMethod(static_cast<TR::MethodBuilder *>(this));
+   TR::IlGeneratorMethodDetails details(&resolvedMethod);
+
+   int32_t rc=0;
+   *entryPoint = (void *) compileMethodFromDetails(NULL, details, noOpt, rc);
+   // typeDictionary()->NotifyCompilationDone();
+   return rc;
+}
+
+
+// int32_t compileMethodBuilder(OMR::JitBuilder::MethodBuilder * methodBuilder, void ** entryPoint)
+// {
+//     auto ret = internal_compileMethodBuilder(static_cast<TR::MethodBuilder *>(static_cast<TR::IlBuilder *>(methodBuilder != NULL ? methodBuilder->_impl : NULL)), entryPoint);
+//     return ret;
+// }
+
+// internal_compileMethodBuilder(TR::MethodBuilder *m, void **entry)
+// {
+//    auto rc = m->Compile(entry);
+//    return rc;
+// }
+
+// int32_t
+// OMR::MethodBuilder::Compile(void **entry)
+// {
+//    TR::ResolvedMethod resolvedMethod(static_cast<TR::MethodBuilder *>(this));
+//    TR::IlGeneratorMethodDetails details(&resolvedMethod);
+
+//    int32_t rc=0;
+//    *entry = (void *) compileMethodFromDetails(NULL, details, warm, rc);
+//    typeDictionary()->NotifyCompilationDone();
+//    return rc;
+// }

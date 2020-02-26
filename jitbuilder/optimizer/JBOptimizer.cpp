@@ -147,6 +147,12 @@ static const OptimizationStrategy JBwarmStrategyOpts[] =
    { OMR::endOpts                                                                  },
    };
 
+static const OptimizationStrategy TreeInterpreterOpts[] =
+   {
+   { OMR::treeInterpreter                                                          },
+   { OMR::endOpts                                                                  },
+   };
+
 
 namespace JitBuilder
 {
@@ -218,10 +224,10 @@ Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *methodSymb
    self()->setRequestOptimization(OMR::tacticalGlobalRegisterAllocator, true);
 
 
-   omrCompilationStrategies[noOpt] = JBcoldStrategyOpts;
-   omrCompilationStrategies[cold]  = JBcoldStrategyOpts;
-   omrCompilationStrategies[warm]  = JBcoldStrategyOpts;
-   omrCompilationStrategies[hot]   = JBcoldStrategyOpts;
+   omrCompilationStrategies[noOpt] = TreeInterpreterOpts;
+   omrCompilationStrategies[cold]  = TreeInterpreterOpts;
+   omrCompilationStrategies[warm]  = TreeInterpreterOpts;
+   omrCompilationStrategies[hot]   = TreeInterpreterOpts;
 
    }
 

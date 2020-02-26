@@ -83,6 +83,7 @@ TR::TreeInterpreter::perform()
       traceMsg(comp(), "walking treeTop n%dn\n", treeTopNode->getGlobalIndex());
       process(treeTopNode);
       dumpNodeToValueMap();
+      dumpSymbolTable();
       if (treeTopNode->getOpCodeValue() == TR::treetop){
          VALUE treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
          traceMsg(comp(), "treeTop n%dn VALUE(%s) = 0x%.8X\n",
@@ -90,6 +91,11 @@ TR::TreeInterpreter::perform()
       }
       traceMsg(comp(), "------------------------\n");
    }
+
+   // interpretation finished
+   throw TR::CompilationInterrupted();
+   TR::comp->failCompilation<TR::CompilationInterrupted>("interrupted after instruction selection");
+   // TR::comp()->failCompilation<TR::CompilationException>("IL interpretation ends");
    return 1;
 }
 
@@ -140,7 +146,7 @@ TR::TreeInterpreter::dumpSymbolTable()
    stringp += sprintf(stringp, "  symbolTable DUMP:\n");
    for(auto e : symbolTable){
       stringp += sprintf(stringp, "\tTR::Symbol *: 0x%.8X;  ", e.first);
-      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X, rc = %2d}\n",
+      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X}\n",
          VALUETYPE_NAME[e.second.type], e.second.data);
     }
     traceMsg(comp(), "%s\n", symTableString);
