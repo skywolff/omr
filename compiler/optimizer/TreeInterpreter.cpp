@@ -69,7 +69,8 @@ TR::TreeInterpreter::create(TR::OptimizationManager *manager)
 
 TR::TreeInterpreter::TreeInterpreter(TR::OptimizationManager *manager)
    : TR::Optimization(manager),
-   nodeValueMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion())
+   nodeValueMap(std::less<ncount_t>(), comp()->trMemory()->currentStackRegion()),
+   symbolTable(std::less<TR::Symbol *>(), comp()->trMemory()->currentStackRegion())
 {
 }
 
@@ -81,7 +82,7 @@ TR::TreeInterpreter::perform()
       TR::Node *treeTopNode = treeTop->getNode();
       traceMsg(comp(), "walking treeTop n%dn\n", treeTopNode->getGlobalIndex());
       process(treeTopNode);
-      traceMsg(comp(), "%s\n", dumpNodeToValueMap());
+      dumpNodeToValueMap();
       if (treeTopNode->getOpCodeValue() == TR::treetop){
          VALUE treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
          traceMsg(comp(), "treeTop n%dn VALUE(%s) = 0x%.8X\n",
@@ -103,6 +104,7 @@ TR::TreeInterpreter::process(TR::Node *node)
 {
    if (nodeValueMap.find(node->getGlobalIndex()) != nodeValueMap.end()){
       traceMsg(comp(), "\tprocessing node n%dn [%p], value found in map\n", node->getGlobalIndex(), node);
+      return;
    }
 
    int numChildren = node->getNumChildren();
@@ -115,18 +117,32 @@ TR::TreeInterpreter::process(TR::Node *node)
    return;
 }
 
-char *
+void
 TR::TreeInterpreter::dumpNodeToValueMap()
 {
-   char *mapString = (char *) malloc(65536);
+   char mapString[2048];
    char *stringp = mapString;
    stringp += sprintf(stringp, "  nodeToValueMap DUMP:\n");
    for(auto e : nodeValueMap){
       stringp += sprintf(stringp, "\tnodeGlobalIndex: n%dn;  ", e.first);
-      // stringp += sprintf(stringp, "VALUE: {type = %s, data = {aconst = %#.8x, iconst = %d, lconst = %ld}}\n",
-         // VALUETYPE_NAME[e.second.type], e.second.data.aconst, e.second.data.iconst, e.second.data.lconst);
       stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X}\n",
          VALUETYPE_NAME[e.second.type], e.second.data);
     }
-    return mapString;
+    traceMsg(comp(), "%s\n", mapString);
+    return;
+}
+
+void
+TR::TreeInterpreter::dumpSymbolTable()
+{
+   char symTableString[2048];
+   char *stringp = symTableString;
+   stringp += sprintf(stringp, "  symbolTable DUMP:\n");
+   for(auto e : symbolTable){
+      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%.8X;  ", e.first);
+      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X, rc = %2d}\n",
+         VALUETYPE_NAME[e.second.type], e.second.data);
+    }
+    traceMsg(comp(), "%s\n", symTableString);
+    return;
 }

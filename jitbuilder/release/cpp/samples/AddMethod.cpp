@@ -43,14 +43,10 @@ AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
 bool
 AddMethod::buildIL()
    {
-   Store("c", Load("a"));
-   Store("d", Load("b"));
    Return(
       Add(
-         Load("c"),
-         Load("d")
-         ));
-
+         Load("a"),
+         Load("b")));
    return true;
    }
 
