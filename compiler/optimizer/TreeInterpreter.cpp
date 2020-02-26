@@ -139,7 +139,7 @@ TR::TreeInterpreter::dumpSymbolTable()
    char *stringp = symTableString;
    stringp += sprintf(stringp, "  symbolTable DUMP:\n");
    for(auto e : symbolTable){
-      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%.8X;  ", e.first);
+      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%p;  ", e.first);
       stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X, rc = %2d}\n",
          VALUETYPE_NAME[e.second.type], e.second.data);
     }
