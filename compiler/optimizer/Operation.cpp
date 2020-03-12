@@ -71,11 +71,6 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          result = symbolTable[node->getSymbol()];
          break;
       case TR::lstore:
-         printf("store:\n");
-         printf("symbol: %ld\n", node->getSymbol());
-         printf("symbolreference: %ld %s %x\n", node->getSymbolReference(), node->getSymbolReference(), node->getSymbolReference());
-         printf("value: %ld\n", node->getFirstChild()->getLongInt());
-         printf("\n");
          // map symbol ptr to VALUE of the store
          symbolTable[node->getSymbol()] = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          break;

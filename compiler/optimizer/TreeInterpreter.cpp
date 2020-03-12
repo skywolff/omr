@@ -90,6 +90,8 @@ TR::TreeInterpreter::perform()
       }
       traceMsg(comp(), "------------------------\n");
    }
+   // interpretation finished, interrupt compiler
+   comp()->failCompilation<TR::CompilationInterrupted>("IL interpretation finsihed");
    return 1;
 }
 

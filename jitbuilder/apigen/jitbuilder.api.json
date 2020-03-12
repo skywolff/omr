@@ -30,6 +30,15 @@
             {"name":"entryPoint","type":"ppointer"}
             ]
         },
+        { "name": "interpretMethodBuilder"
+            , "overloadsuffix": ""
+            , "flags": []
+            , "return": "int32"
+            , "parms": [
+                {"name":"methodBuilder","type":"MethodBuilder"},
+                {"name":"entryPoint","type":"ppointer"}
+                ]
+        },
         { "name": "shutdownJit"
         , "overloadsuffix": ""
         , "flags": []

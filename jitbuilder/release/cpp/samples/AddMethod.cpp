@@ -70,24 +70,25 @@ main(int argc, char *argv[])
    printf("Step 2: define relevant types\n");
    OMR::JitBuilder::TypeDictionary types;
 
-   printf("Step 3: compile method builder\n");
+   // printf("Step 3: compile method builder\n");
    AddMethod AddMethod(&types);
    void *entry=0;
-   int32_t rc = compileMethodBuilder(&AddMethod, &entry);
-   if (rc != 0)
-      {
-      fprintf(stderr,"FAIL: compilation error %d\n", rc);
-      exit(-2);
-      }
+   // printf("interpreting...\n");
+   int32_t rc = interpretMethodBuilder(&AddMethod, &entry);
+   printf("interpretation finished with a value %d\n", rc);
+   // int32_t rc = compileMethodBuilder(&AddMethod, &entry);
+   // if (rc != 0)
+      // {
+      // fprintf(stderr,"FAIL: compilation error %d\n", rc);
+      // exit(-2);
+      // }
 
-   printf("Step 4: invoke compiled code\n");
-   AddFunctionType *addMethod = (AddFunctionType *)entry;
-   int64_t r = addMethod();
+   // printf("Step 4: invoke compiled code\n");
+   // AddFunctionType *addMethod = (AddFunctionType *)entry;
+   // int64_t r = addMethod();
 
-   printf("7 + 2 is %ld\n", r);
-
-   printf ("Step 5: shutdown JIT\n");
-   shutdownJit();
-
-   printf("PASS\n");
+   // printf("7 + 2 is %ld\n", r);
+   // printf ("Step 5: shutdown JIT\n");
+   // shutdownJit();
+   // printf("PASS\n");
    }
