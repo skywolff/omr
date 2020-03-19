@@ -49,7 +49,7 @@ class TreeInterpreter : public TR::Optimization
    // dconst - double constant (64-bit ieee fp)
    // bconst - byte integer constant (8-bit signed 2's complement)
    // sconst - short integer constant (16-bit signed 2's complement)
-   char VALUETYPE_NAME[8][10] = {
+   char VALUETYPE_NAME[9][10] = {
       "NoType",
       "Int8",
       "Int16",
@@ -58,6 +58,7 @@ class TreeInterpreter : public TR::Optimization
       "Float",
       "Double",
       "Address",
+      "Boolean"
    };
    typedef enum {
       NoType=0,
@@ -68,11 +69,17 @@ class TreeInterpreter : public TR::Optimization
       Float,
       Double,
       Address,
+      Boolean
    } DATATYPE;
    typedef union{
       uintptrj_t  aconst;
+      int8_t      bconst;
+      int16_t     sconst;
       int32_t     iconst;
       int64_t     lconst;
+      float_t     fconst;
+      double_t    dconst;
+      bool        boolean;
    } DATA;
    
    typedef struct {
