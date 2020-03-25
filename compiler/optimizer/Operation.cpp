@@ -85,6 +85,16 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       case TR::lstorei:
       {
          //TODO
+         // store indirect
+         // first child is the object
+         // second child is the value
+         // node.symRef is the offset
+         // address of the first child is the address of first child + node.symref
+
+         // need another structure to represent the heap
+         // look at trRegion
+         // need to allocate mem on trStkMem
+         
          break;
       }
       case TR::lwrtbari:
@@ -307,18 +317,6 @@ TR::TreeInterpreter::performOp(TR::Node * node){
                               operand1.data.lconst == operand2.data.lconst ? 0 : -1;
          break;
       }
-      case TR::lRegLoad:
-      {
-         //TODO
-         ///////////////UNSURE
-         break;
-      }
-      case TR::lRegStore:
-      {
-         //TODO
-         ///////////////UNSURE
-         break;
-      }
       case TR::lternary:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
@@ -341,12 +339,6 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Double;
          result.data.lconst = operand1.data.lconst;
-         break;
-      }
-      case TR::long2String:
-      {
-         //TODO
-         ///////////////UNSURE
          break;
       }
       case TR::lcmpset:
