@@ -223,9 +223,9 @@ internal_compileMethodBuilder(TR::MethodBuilder *m, void **entry)
    }
 
 int32_t
-internal_interpretMethodBuilder(TR::MethodBuilder *m, void **entry)
+internal_interpretMethodBuilder(TR::MethodBuilder *m, void **entry, void * result)
    {
-   auto rc = m->Interpret(entry);
+   auto rc = m->Interpret(entry, result);
 
 #if defined(J9ZOS390)
    struct FunctionDescriptor

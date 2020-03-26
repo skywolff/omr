@@ -36,7 +36,8 @@
             , "return": "int32"
             , "parms": [
                 {"name":"methodBuilder","type":"MethodBuilder"},
-                {"name":"entryPoint","type":"ppointer"}
+                {"name":"entryPoint","type":"ppointer"},
+                {"name":"result","type":"pointer"}
                 ]
         },
         { "name": "shutdownJit"
