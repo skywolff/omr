@@ -709,6 +709,19 @@ OMR::MethodBuilder::Compile(void **entry)
    return rc;
    }
 
+int32_t
+OMR::MethodBuilder::Interpret(void **entry, void * result)
+   {
+   TR::ResolvedMethod resolvedMethod(static_cast<TR::MethodBuilder *>(this));
+   TR::IlGeneratorMethodDetails details(&resolvedMethod);
+   int32_t rc=0;
+   *entry = (void *) compileMethodFromDetails(NULL, details, noOpt, rc);
+   int64_t tempResult = comp()->getInterpreterResult();
+   memcpy(result, &tempResult, sizeof(int64_t));
+   typeDictionary()->NotifyCompilationDone();
+   return rc;
+   }
+
 void *
 OMR::MethodBuilder::client()
    {

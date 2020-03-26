@@ -78,18 +78,22 @@ int32_t
 TR::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
+   VALUE treeTopValue;
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
       TR::Node *treeTopNode = treeTop->getNode();
       traceMsg(comp(), "walking treeTop n%dn\n", treeTopNode->getGlobalIndex());
       process(treeTopNode);
       dumpNodeToValueMap();
       if (treeTopNode->getOpCodeValue() == TR::treetop){
-         VALUE treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
+         treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
          traceMsg(comp(), "treeTop n%dn VALUE(%s) = 0x%.8X\n",
             treeTopNode->getGlobalIndex(), VALUETYPE_NAME[treeTopValue.type], treeTopValue.data);
       }
       traceMsg(comp(), "------------------------\n");
    }
+   // interpretation finished, interrupt compiler
+   comp()->setInterpreterResult(treeTopValue.data.lconst);
+   comp()->failCompilation<TR::CompilationInterrupted>("IL interpretation finsihed");
    return 1;
 }
 

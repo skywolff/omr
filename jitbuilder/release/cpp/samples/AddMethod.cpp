@@ -35,18 +35,23 @@ AddMethod::AddMethod(OMR::JitBuilder::TypeDictionary *types)
    DefineFile(__FILE__);
 
    DefineName("addMethod");
-   DefineParameter("a", Int64);
-   DefineParameter("b", Int64);
    DefineReturnType(Int64);
    }
 
 bool
 AddMethod::buildIL()
    {
+   Store("a",
+      ConstInt64(7));
+
+   Store("b",
+      ConstInt64(2));
+
    Return(
       Add(
          Load("a"),
          Load("b")));
+
    return true;
    }
 
@@ -54,10 +59,6 @@ AddMethod::buildIL()
 int
 main(int argc, char *argv[])
    {
-   if(argc != 3) {
-      printf("Use the format 'path/to/addMethod a b', where a and b are integers\n");
-      exit(-1);
-   }
    printf("Step 1: initialize JIT\n");
    bool initialized = initializeJit();
    if (!initialized)
@@ -69,25 +70,26 @@ main(int argc, char *argv[])
    printf("Step 2: define relevant types\n");
    OMR::JitBuilder::TypeDictionary types;
 
-   printf("Step 3: compile method builder\n");
+   // printf("Step 3: compile method builder\n");
    AddMethod AddMethod(&types);
    void *entry=0;
-   int32_t rc = compileMethodBuilder(&AddMethod, &entry);
-   if (rc != 0)
-      {
-      fprintf(stderr,"FAIL: compilation error %d\n", rc);
-      exit(-2);
-      }
+   // printf("interpreting...\n");
+   int64_t result;
+   int32_t rc = interpretMethodBuilder(&AddMethod, &entry, &result);
+   printf("interpretation finished with a value %d\n", result);
+   // int32_t rc = compileMethodBuilder(&AddMethod, &entry);
+   // if (rc != 0)
+      // {
+      // fprintf(stderr,"FAIL: compilation error %d\n", rc);
+      // exit(-2);
+      // }
 
-   printf("Step 4: invoke compiled code\n");
-   AddFunctionType *addMethod = (AddFunctionType *)entry;
-   int64_t a = atoi(argv[1]), b = atoi(argv[2]);
-   int64_t r = addMethod(a,b);
+   // printf("Step 4: invoke compiled code\n");
+   // AddFunctionType *addMethod = (AddFunctionType *)entry;
+   // int64_t r = addMethod();
 
-   printf("addMethod(%ld, %ld) == %ld\n", a, b, r);
-
-   printf ("Step 5: shutdown JIT\n");
-   shutdownJit();
-
-   printf("PASS\n");
+   // printf("7 + 2 is %ld\n", r);
+   // printf ("Step 5: shutdown JIT\n");
+   // shutdownJit();
+   // printf("PASS\n");
    }
