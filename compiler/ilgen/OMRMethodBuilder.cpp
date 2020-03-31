@@ -710,16 +710,15 @@ OMR::MethodBuilder::Compile(void **entry)
    }
 
 int32_t
-OMR::MethodBuilder::Interpret(void **entry, void * result)
+OMR::MethodBuilder::Interpret()
    {
    TR::ResolvedMethod resolvedMethod(static_cast<TR::MethodBuilder *>(this));
    TR::IlGeneratorMethodDetails details(&resolvedMethod);
    int32_t rc=0;
-   *entry = (void *) compileMethodFromDetails(NULL, details, noOpt, rc);
-   int64_t tempResult = comp()->getInterpreterResult();
-   memcpy(result, &tempResult, sizeof(int64_t));
+   compileMethodFromDetails(NULL, details, noOpt, rc);
+   TR_ASSERT(rc == 1, "Interpretater returned error code %d, which should return 1 for CompilationInterrupted\n", rc);
    typeDictionary()->NotifyCompilationDone();
-   return rc;
+   return comp()->getInterpreterResult();
    }
 
 void *

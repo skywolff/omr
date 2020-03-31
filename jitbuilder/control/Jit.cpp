@@ -223,9 +223,9 @@ internal_compileMethodBuilder(TR::MethodBuilder *m, void **entry)
    }
 
 int32_t
-internal_interpretMethodBuilder(TR::MethodBuilder *m, void **entry, void * result)
+internal_interpretMethodBuilder(TR::MethodBuilder *m)
    {
-   auto rc = m->Interpret(entry, result);
+   auto result = m->Interpret();
 
 #if defined(J9ZOS390)
    struct FunctionDescriptor
@@ -257,7 +257,7 @@ internal_interpretMethodBuilder(TR::MethodBuilder *m, void **entry, void * resul
    *entry = (uint8_t*) fd;
 #endif
 
-   return rc;
+   return result;
    }
 
 void

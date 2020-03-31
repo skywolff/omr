@@ -74,8 +74,7 @@ main(int argc, char *argv[])
    AddMethod AddMethod(&types);
    void *entry=0;
    // printf("interpreting...\n");
-   int64_t result;
-   int32_t rc = interpretMethodBuilder(&AddMethod, &entry, &result);
+   int64_t result = interpretMethodBuilder(&AddMethod);
    printf("interpretation finished with a value %d\n", result);
    // int32_t rc = compileMethodBuilder(&AddMethod, &entry);
    // if (rc != 0)
