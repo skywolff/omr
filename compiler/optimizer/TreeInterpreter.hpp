@@ -108,6 +108,8 @@ class TreeInterpreter : public TR::Optimization
 
    // operations
    void performOp(TR::Node * node);
+   void dumpNodeToValueMap();
+   void dumpSymbolTable();
 };
 }
 

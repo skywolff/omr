@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corp. and others
+ * Copyright (c) 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -118,4 +118,34 @@ TR::TreeInterpreter::process(TR::Node *node)
    traceMsg(comp(), "\tprocessing node n%dn [%p], evaluating\n", node->getGlobalIndex(), node);
    performOp(node);
    return;
+}
+
+void
+TR::TreeInterpreter::dumpNodeToValueMap()
+{
+   char mapString[2048];
+   char *stringp = mapString;
+   stringp += sprintf(stringp, "  nodeToValueMap DUMP:\n");
+   for(auto e : nodeValueMap){
+      stringp += sprintf(stringp, "\tnodeGlobalIndex: n%dn;  ", e.first);
+      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X}\n",
+         VALUETYPE_NAME[e.second.type], e.second.data);
+    }
+    traceMsg(comp(), "%s\n", mapString);
+    return;
+}
+
+void
+TR::TreeInterpreter::dumpSymbolTable()
+{
+   char symTableString[2048];
+   char *stringp = symTableString;
+   stringp += sprintf(stringp, "  symbolTable DUMP:\n");
+   for(auto e : symbolTable){
+      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%p;  ", e.first);
+      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X, rc = %2d}\n",
+         VALUETYPE_NAME[e.second.type], e.second.data);
+    }
+    traceMsg(comp(), "%s\n", symTableString);
+    return;
 }
