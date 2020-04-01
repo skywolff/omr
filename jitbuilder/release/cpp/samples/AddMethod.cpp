@@ -73,22 +73,9 @@ main(int argc, char *argv[])
    // printf("Step 3: compile method builder\n");
    AddMethod AddMethod(&types);
    void *entry=0;
-   // printf("interpreting...\n");
+   printf("Step 3: interpreting method\n");
    int64_t result = interpretMethodBuilder(&AddMethod);
-   printf("interpretation finished with a value %d\n", result);
-   // int32_t rc = compileMethodBuilder(&AddMethod, &entry);
-   // if (rc != 0)
-      // {
-      // fprintf(stderr,"FAIL: compilation error %d\n", rc);
-      // exit(-2);
-      // }
-
-   // printf("Step 4: invoke compiled code\n");
-   // AddFunctionType *addMethod = (AddFunctionType *)entry;
-   // int64_t r = addMethod();
-
-   // printf("7 + 2 is %ld\n", r);
-   // printf ("Step 5: shutdown JIT\n");
-   // shutdownJit();
-   // printf("PASS\n");
+   printf("interpretation finished with value %d\n", result);
+   printf ("Step 4: shutdown JIT\n");
+   shutdownJit();
    }

@@ -97,13 +97,11 @@ static const OptimizationStrategy cheapTacticalGlobalRegisterAllocatorOpts[] =
 
 static const OptimizationStrategy JBcoldStrategyOpts[] =
    {
-   { OMR::treeInterpreter                                                          },
    { OMR::deadTreesElimination                                                     },
    { OMR::treeSimplification                                                       },
    { OMR::localCSE                                                                 },
    { OMR::basicBlockExtension                                                      },
-   // { OMR::cheapTacticalGlobalRegisterAllocatorGroup                                },
-   { OMR::endOpts                                                                  },
+   { OMR::cheapTacticalGlobalRegisterAllocatorGroup                                },
    };
 
 static const OptimizationStrategy JBwarmStrategyOpts[] =
@@ -225,9 +223,9 @@ Optimizer::Optimizer(TR::Compilation *comp, TR::ResolvedMethodSymbol *methodSymb
 
 
    omrCompilationStrategies[noOpt] = TreeInterpreterOpts;
-   omrCompilationStrategies[cold]  = JBcoldStrategyOpts;
-   omrCompilationStrategies[warm]  = JBcoldStrategyOpts;
-   omrCompilationStrategies[hot]   = JBcoldStrategyOpts;
+   omrCompilationStrategies[cold]  = JBwarmStrategyOpts;
+   omrCompilationStrategies[warm]  = JBwarmStrategyOpts;
+   omrCompilationStrategies[hot]   = JBwarmStrategyOpts;
 
    }
 

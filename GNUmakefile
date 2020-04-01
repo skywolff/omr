@@ -178,6 +178,11 @@ ifeq (1,$(OMR_TEST_COMPILER))
   main_targets += fvtest/compilertest
 endif
 
+# Test Interpreter
+ifeq (1,$(OMR_TEST_INTERPRETER))
+  main_targets += fvtest/interpretertest
+endif
+
 # JitBuilder
 ifeq (1,$(OMR_JITBUILDER))
   main_targets += jitbuilder
@@ -287,6 +292,11 @@ perftest/gctest :: $(test_prereqs)
 # Test Compiler dependencies
 ifeq (1,$(OMR_TEST_COMPILER))
   fvtest/compilertest :: $(compiler_prereqs)
+endif
+
+# Test Interpreter dependencies
+ifeq (1,$(OMR_TEST_INTERPRETER))
+  fvtest/interpretertest :: $(compiler_prereqs)
 endif
 
 # JitBuilder dependencies

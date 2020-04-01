@@ -19,40 +19,33 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
 
-#ifndef JITBUILDER_COMPILER_HPP
-#define JITBUILDER_COMPILER_HPP
+#include "JitTest.hpp"
+#include "omrTest.h"
 
-#include "method_compiler.hpp"
+extern "C" {
+int omr_main_entry(int argc, char **argv, char **envp);
+}
 
-namespace TR { class IlVerifier; } 
-
-namespace Tril {
+OMRPortLibrary TRTest::TestWithPortLib::PortLib;
+omrthread_t TRTest::TestWithPortLib::current_thread = NULL;
 
 /**
- * @brief Concrete realization of MethodCompiler 
+ * @brief Global test environment to initialize and shutdown the port library
  */
-class SimpleCompiler : public Tril::MethodCompiler {
-    public:
-        explicit SimpleCompiler(const ASTNode* methodNode)
-            : MethodCompiler(methodNode) {}
+class JitTestEnvironment: public ::testing::Environment {
+   public:
+   virtual void SetUp() {
+      TRTest::TestWithPortLib::initPortLib();
+   }
 
-        /**
-         * @brief Compiles the Tril method
-         * @return 0 on compilation success, an error code otherwise
-         */
-        int32_t compile() /* override */ ;
-
-        /**
-         * @brief Start compilation with a verifier. 
-         * @param verifier The verifier to run. 
-         * @return 0 on complilation success, an error code or exception otherwise. 
-         */
-        int32_t compileWithVerifier(TR::IlVerifier* verifier);
-
-        int64_t interpret(TR::IlVerifier* verifier);
-
+   virtual void TearDown() {
+      TRTest::TestWithPortLib::shutdownPortLib();
+   }
 };
 
-} // namespace Tril
-
-#endif // JITBUILDER_COMPILER_HPP
+int omr_main_entry(int argc, char **argv, char **envp) {
+   ::testing::InitGoogleTest(&argc, argv);
+   OMREventListener::setDefaultTestListener();
+   ::testing::AddGlobalTestEnvironment(new JitTestEnvironment);
+   return RUN_ALL_TESTS();
+}

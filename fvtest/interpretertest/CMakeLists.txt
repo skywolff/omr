@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, 2018 IBM Corp. and others
+# Copyright (c) 2017, 2019 IBM Corp. and others
 #
 # This program and the accompanying materials are made available under
 # the terms of the Eclipse Public License 2.0 which accompanies this
@@ -19,44 +19,32 @@
 # SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
 ###############################################################################
 
-include(OmrAssert)
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-omr_assert(TEST OMR_FVTEST)
+project(interpretertest LANGUAGES C CXX)
 
-add_subdirectory(util)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(omrGtestGlue)
-add_subdirectory(algotest)
-add_subdirectory(coretest)
-add_subdirectory(porttest)
-add_subdirectory(rastest)
-add_subdirectory(sigtest)
-add_subdirectory(threadextendedtest)
-add_subdirectory(threadtest)
-add_subdirectory(utiltest)
-add_subdirectory(vmtest)
 
-if(OMR_GC_TEST)
-	add_subdirectory(gctest)
-endif()
+add_executable(interpretertest
+	InterpreterTest.cpp
+	main.cpp
+)
 
-if(OMR_GC_API_TEST)
-	add_subdirectory(gc_api_test)
-endif()
+target_link_libraries(interpretertest
+	testcompiler
+	omrGtestGlue
+	omrport
+	# tril
+	${CMAKE_DL_LIBS}
+	${OMR_PORT_LIB}
+)
 
-if(OMR_JITBUILDER_TEST)
-	add_subdirectory(jitbuildertest)
-endif()
+set_property(TARGET interpretertest PROPERTY FOLDER fvtest)
 
-if(OMR_TEST_COMPILER)
-	add_subdirectory(compilertest)
-endif()
-
-if(OMR_TEST_INTERPRETER)
-	add_subdirectory(interpretertest)
-endif()
-
-if(OMR_JITBUILDER_TEST)
-	add_subdirectory(tril)
-	add_subdirectory(compilertriltest)
-endif()
+add_test(
+	NAME interpretertest
+	COMMAND interpretertest --gtest_color=yes --gtest_output=xml:${CMAKE_CURRENT_BINARY_DIR}/interpretertest-results.xml
+)
