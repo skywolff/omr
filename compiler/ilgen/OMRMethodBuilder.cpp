@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2019 IBM Corp. and others
+ * Copyright (c) 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -716,7 +716,7 @@ OMR::MethodBuilder::Interpret()
    TR::IlGeneratorMethodDetails details(&resolvedMethod);
    int32_t rc=0;
    compileMethodFromDetails(NULL, details, noOpt, rc);
-   TR_ASSERT(rc == 1, "Interpretater returned error code %d, which should return 1 for CompilationInterrupted\n", rc);
+   TR_ASSERT_FATAL(rc == 1, "Interpreter returned error code %d, which should return 1 for CompilationInterrupted\n", rc);
    typeDictionary()->NotifyCompilationDone();
    return comp()->getInterpreterResult();
    }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corp. and others
+ * Copyright (c) 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -24,8 +24,8 @@
 
 void
 TR::TreeInterpreter::performOp(TR::Node * node){
-   VALUE operand1, operand2, result;
-   memset(&result, 0, sizeof(VALUE));
+   TR::TreeInterpreter::Value operand1, operand2, result;
+   std::memset(&result, 0, sizeof(TR::TreeInterpreter::Value));
 
    switch (node->getOpCodeValue()){
       case TR::BBStart:
@@ -49,8 +49,8 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       }
       case TR::lloadi:
       {
-         result.type = TR::TreeInterpreter::DATATYPE::Address;
-         result.data.aconst = (uintptrj_t)&(symbolTable[node->getSymbol()]);
+         result.type = TR::TreeInterpreter::Datatype::Address;
+         result.data.aconst = reinterpret_cast<uintptr_t>(&(symbolTable[node->getSymbol()]));
          break;
       }
       case TR::lstore:
@@ -102,7 +102,7 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Int64;
-         result.data.lconst = ~operand1.data.lconst;
+         result.data.lconst = -operand1.data.lconst;
          break;
       }
       case TR::labs:
@@ -120,7 +120,11 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
-         result.data.lconst = operand1.data.lconst << operand2.data.lconst;
+         if (operand2.data.lconst < 64){
+            result.data.lconst = operand1.data.lconst << operand2.data.lconst;
+         } else {
+            result.data.lconst = 0;
+         }
          break;
       }
       case TR::lshr:
@@ -128,7 +132,11 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
-         result.data.lconst = operand1.data.lconst >> operand2.data.lconst;
+         if (operand2.data.lconst < 64){
+            result.data.lconst = operand1.data.lconst >> operand2.data.lconst;
+         } else {
+            result.data.lconst = 0;
+         }
          break;
       }
       case TR::lrol:
@@ -136,8 +144,8 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
-         result.data.lconst = (operand1.data.lconst << operand2.data.lconst) 
-                              | (operand1.data.lconst >> (64 - operand2.data.lconst));
+         result.data.lconst = (operand1.data.lconst << (operand2.data.lconst%64)) 
+                              | (operand1.data.lconst >> (64 - (operand2.data.lconst%64)));
          break;
       }
       case TR::land:
@@ -168,97 +176,97 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Int32;
-         result.data.iconst = (int32_t)operand1.data.lconst;
+         result.data.iconst = static_cast<int32_t>(operand1.data.lconst);
          break;
       }
       case TR::l2f:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Float;
-         result.data.fconst = (float_t)operand1.data.lconst;
+         result.data.fconst = static_cast<float_t>(operand1.data.lconst);
          break;
       }
       case TR::l2d:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Double;
-         result.data.dconst = (double_t)operand1.data.lconst;
+         result.data.dconst = static_cast<double_t>(operand1.data.lconst);
          break;
       }
       case TR::l2b:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Int8;
-         result.data.bconst = (int8_t)operand1.data.lconst;
+         result.data.bconst = static_cast<int8_t>(operand1.data.lconst);
          break;
       }
       case TR::l2s:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Int16;
-         result.data.sconst = (int16_t)operand1.data.lconst;
+         result.data.sconst = static_cast<int16_t>(operand1.data.lconst);
          break;
       }
       case TR::l2a:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Address;
-         result.data.aconst = (uintptrj_t)operand1.data.lconst;
+         result.data.aconst = static_cast<uintptr_t>(operand1.data.lconst);
          break;
       }
       case TR::lcmpeq:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst == operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst == operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmpne:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst != operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst != operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmplt:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst <  operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst <  operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmpge:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst >= operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst >= operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmpgt:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst >  operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst >  operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmple:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Boolean;
-         result.data.lconst = operand1.data.lconst <= operand2.data.lconst ? true : false;
+         result.type = Int64;
+         result.data.lconst = operand1.data.lconst <= operand2.data.lconst ? 1 : 0;
          break;
       }
       case TR::lcmp:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
-         result.type = Int8;
+         result.type = Int64;
          result.data.lconst = operand1.data.lconst >  operand2.data.lconst ? 1 :
                               operand1.data.lconst == operand2.data.lconst ? 0 : -1;
          break;
@@ -267,7 +275,7 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Int64;
-         result.data.lconst = operand1.data.boolean
+         result.data.lconst = operand1.data.lconst
                                  ? nodeValueMap[node->getChild(1)->getGlobalIndex()].data.lconst
                                  : nodeValueMap[node->getChild(2)->getGlobalIndex()].data.lconst;
          break;
@@ -276,15 +284,23 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         int64_t hi1,lo1,hi2,lo2;
+         hi1 = operand1.data.lconst >> 32;
+         lo1 = operand1.data.lconst & 0xFFFFFFFF;
+         hi2 = operand2.data.lconst >> 32;
+         lo2 = operand2.data.lconst & 0xFFFFFFFF;
+         int64_t high_word = hi1 * hi2;
+         high_word += (lo1 * hi2)>>32;
+         high_word += (lo2 * hi1)>>32;
          result.type = Int64;
-         result.data.lconst = (((__int128_t)operand1.data.lconst) * ((__int128_t)operand2.data.lconst))>>64;
+         result.data.lconst = high_word;
          break;
       }
       case TR::lbits2d:
       {
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          result.type = Double;
-         result.data.lconst = operand1.data.lconst;
+         std::memcpy(&result.data.dconst, &operand1.data.lconst, 8);
          break;
       }
       case TR::lcmpset:
@@ -292,13 +308,13 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          int64_t * pointer = (int64_t *)&nodeValueMap[node->getChild(0)->getGlobalIndex()].data.lconst;
          operand1 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(2)->getGlobalIndex()];
-         result.type = Boolean;
+         result.type = Int64;
          if (*pointer == operand1.data.lconst){
             *pointer = operand2.data.lconst;
-            result.data.boolean = false;
+            result.data.lconst = 0;
          }
          else{
-            result.data.boolean = true;
+            result.data.lconst = 1;
          }
          break;
       }
@@ -337,7 +353,9 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          break;
       }
       default:
-         TR_ASSERT_FATAL(1, "Unexpected opcode for n%dn [%p]\n", node->getGlobalIndex(), node);
+      {
+         TR_ASSERT_FATAL(false, "Unexpected opcode %s:%d for n%dn [%p]\n", node->getOpCode().getName(), node->getOpCodeValue(), node->getGlobalIndex(), node);
+      }
    }
    if (node->getReferenceCount() != 0){
       nodeValueMap[node->getGlobalIndex()] = result;

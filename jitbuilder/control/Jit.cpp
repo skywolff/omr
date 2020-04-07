@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2019 IBM Corp. and others
+ * Copyright (c) 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -225,39 +225,7 @@ internal_compileMethodBuilder(TR::MethodBuilder *m, void **entry)
 int32_t
 internal_interpretMethodBuilder(TR::MethodBuilder *m)
    {
-   auto result = m->Interpret();
-
-#if defined(J9ZOS390)
-   struct FunctionDescriptor
-   {
-      uint64_t environment;
-      void* func;
-   };
-
-   FunctionDescriptor* fd = new FunctionDescriptor();
-   fd->environment = 0;
-   fd->func = *entry;
-
-   *entry = (void*) fd;
-#elif defined(AIXPPC)
-   struct FunctionDescriptor
-      {
-      void* func;
-      void* toc;
-      void* environment;
-      };
-
-   FunctionDescriptor* fd = new FunctionDescriptor();
-   fd->func = *entry;
-   // TODO: There should really be a better way to get this. Usually, we would use
-   // cg->getTOCBase(), but the code generator has already been destroyed by now...
-   fd->toc = toPPCTableOfConstants(TR_PersistentMemory::getNonThreadSafePersistentInfo()->getPersistentTOC())->getTOCBase();
-   fd->environment = NULL;
-
-   *entry = (uint8_t*) fd;
-#endif
-
-   return result;
+   return m->Interpret();
    }
 
 void

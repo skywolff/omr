@@ -78,7 +78,7 @@ int32_t
 TR::TreeInterpreter::perform()
 {
    TR::TreeTop *firstTree = comp()->getStartTree();
-   VALUE treeTopValue;
+   Value treeTopValue;
    for ( TR::TreeTop * treeTop = firstTree; treeTop != NULL; treeTop = treeTop->getNextTreeTop()){
       TR::Node *treeTopNode = treeTop->getNode();
       traceMsg(comp(), "walking treeTop n%dn\n", treeTopNode->getGlobalIndex());
@@ -86,8 +86,8 @@ TR::TreeInterpreter::perform()
       dumpNodeToValueMap();
       if (treeTopNode->getOpCodeValue() == TR::treetop){
          treeTopValue = nodeValueMap[treeTopNode->getChild(0)->getGlobalIndex()];
-         traceMsg(comp(), "treeTop n%dn VALUE(%s) = 0x%.8X\n",
-            treeTopNode->getGlobalIndex(), VALUETYPE_NAME[treeTopValue.type], treeTopValue.data);
+         traceMsg(comp(), "treeTop n%dn Value(%s) = 0x%.8X\n",
+            treeTopNode->getGlobalIndex(), ValueTypes[treeTopValue.type], treeTopValue.data);
       }
       traceMsg(comp(), "------------------------\n");
    }
@@ -126,10 +126,10 @@ TR::TreeInterpreter::dumpNodeToValueMap()
    char mapString[2048];
    char *stringp = mapString;
    stringp += sprintf(stringp, "  nodeToValueMap DUMP:\n");
-   for(auto e : nodeValueMap){
-      stringp += sprintf(stringp, "\tnodeGlobalIndex: n%dn;  ", e.first);
-      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X}\n",
-         VALUETYPE_NAME[e.second.type], e.second.data);
+   for(TR::TreeInterpreter::NodeToValueMap::iterator node = nodeValueMap.begin(); node != nodeValueMap.end(); ++node){
+      stringp += sprintf(stringp, "\tnodeGlobalIndex: n%dn;  ", node->first);
+      stringp += sprintf(stringp, "Value: {type = %5s, data = 0x%.8X}\n",
+         ValueTypes[node->second.type], node->second.data);
     }
     traceMsg(comp(), "%s\n", mapString);
     return;
@@ -141,10 +141,10 @@ TR::TreeInterpreter::dumpSymbolTable()
    char symTableString[2048];
    char *stringp = symTableString;
    stringp += sprintf(stringp, "  symbolTable DUMP:\n");
-   for(auto e : symbolTable){
-      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%p;  ", e.first);
-      stringp += sprintf(stringp, "VALUE: {type = %5s, data = 0x%.8X, rc = %2d}\n",
-         VALUETYPE_NAME[e.second.type], e.second.data);
+   for(TR::TreeInterpreter::SymbolTable::iterator symbol = symbolTable.begin(); symbol != symbolTable.end(); ++symbol){
+      stringp += sprintf(stringp, "\tTR::Symbol *: 0x%p;  ", symbol->first);
+      stringp += sprintf(stringp, "Value: {type = %5s, data = 0x%.8X, rc = %2d}\n",
+         ValueTypes[symbol->second.type], symbol->second.data);
     }
     traceMsg(comp(), "%s\n", symTableString);
     return;

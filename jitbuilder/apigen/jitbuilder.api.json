@@ -31,12 +31,12 @@
             ]
         },
         { "name": "interpretMethodBuilder"
-            , "overloadsuffix": ""
-            , "flags": []
-            , "return": "int32"
-            , "parms": [
-                {"name":"methodBuilder","type":"MethodBuilder"}
-                ]
+        , "overloadsuffix": ""
+        , "flags": []
+        , "return": "int32"
+        , "parms": [
+            {"name":"methodBuilder","type":"MethodBuilder"}
+            ]
         },
         { "name": "shutdownJit"
         , "overloadsuffix": ""

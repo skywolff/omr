@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corp. and others
+ * Copyright (c) 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -24,43 +24,30 @@
 
 #include <stdint.h>
 #include "env/TRMemory.hpp"
-#include "infra/List.hpp"
 #include "optimizer/Optimization.hpp"
-#include "optimizer/Operation.hpp"
-#include <stack>
-#include <string>
-
-
-namespace TR { class Block; }
-namespace TR { class OptimizationManager; }
-namespace TR { class TreeTop; }
 
 namespace TR
 {
+class Block;
+class OptimizationManager;
+class TreeTop;
 
+static const char ValueTypes[9][10] = {
+   "NoType",
+   "Int8",
+   "Int16",
+   "Int32",
+   "Int64",
+   "Float",
+   "Double",
+   "Address",
+   "Boolean"
+};
 
 class TreeInterpreter : public TR::Optimization
 {
    public:
-   // aconst - address constant (zero value means NULL)
-   // iconst - integer constant (32-bit signed 2's complement)
-   // lconst - long integer constant (64-bit signed 2's complement)
-   // fconst - float constant (32-bit ieee fp)
-   // dconst - double constant (64-bit ieee fp)
-   // bconst - byte integer constant (8-bit signed 2's complement)
-   // sconst - short integer constant (16-bit signed 2's complement)
-   char VALUETYPE_NAME[9][10] = {
-      "NoType",
-      "Int8",
-      "Int16",
-      "Int32",
-      "Int64",
-      "Float",
-      "Double",
-      "Address",
-      "Boolean"
-   };
-   typedef enum {
+   enum Datatype {
       NoType=0,
       Int8,
       Int16,
@@ -68,37 +55,35 @@ class TreeInterpreter : public TR::Optimization
       Int64,
       Float,
       Double,
-      Address,
-      Boolean
-   } DATATYPE;
-   typedef union{
-      uintptrj_t  aconst;
+      Address
+   };
+   union Data{
+      uintptr_t  aconst;
       int8_t      bconst;
       int16_t     sconst;
       int32_t     iconst;
       int64_t     lconst;
       float_t     fconst;
       double_t    dconst;
-      bool        boolean;
-   } DATA;
+   };
    
-   typedef struct {
-      DATATYPE type;
-      DATA data;
-   } VALUE;
+   struct Value {
+      enum Datatype type;
+      union Data data;
+   };
 
 
-   typedef std::pair<ncount_t const, VALUE> NodeToValueMapEntry;
+   typedef std::pair<ncount_t const, struct Value> NodeToValueMapEntry;
    typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
-   typedef std::map<ncount_t, VALUE, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
+   typedef std::map<ncount_t, struct Value, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
    NodeToValueMap nodeValueMap;
 
-   typedef std::pair<TR::Symbol * const, VALUE> SymbolTableEntry;
+   typedef std::pair<TR::Symbol * const, struct Value> SymbolTableEntry;
    typedef TR::typed_allocator<SymbolTableEntry, TR::Region&> SymbolTableAlloc;
-   typedef std::map<TR::Symbol *, VALUE, std::less<TR::Symbol *>, SymbolTableAlloc> SymbolTable;
+   typedef std::map<TR::Symbol *, struct Value, std::less<TR::Symbol *>, SymbolTableAlloc> SymbolTable;
    SymbolTable symbolTable;
 
-   TreeInterpreter(TR::OptimizationManager *manager);
+   explicit TreeInterpreter(TR::OptimizationManager *manager);
    static TR::Optimization *create(TR::OptimizationManager *manager);
    virtual int32_t perform();
    virtual const char * optDetailString() const throw();
