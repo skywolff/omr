@@ -59,6 +59,16 @@
 #include "optimizer/TransformUtil.hpp"
 #include "ras/Debug.hpp"
 
+const char TR::TreeInterpreter::ValueTypes[8][10] = {
+   "NoType",
+   "Int8",
+   "Int16",
+   "Int32",
+   "Int64",
+   "Float",
+   "Double",
+   "Address"
+};
 
 TR::Optimization *
 TR::TreeInterpreter::create(TR::OptimizationManager *manager)

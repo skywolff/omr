@@ -120,11 +120,26 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
-         if (operand2.data.lconst < 64){
-            result.data.lconst = operand1.data.lconst << operand2.data.lconst;
-         } else {
-            result.data.lconst = 0;
+         TR_ASSERT_FATAL(operand2.data.lconst >= 0, "lshl cannot have negative shift amount %l\n", operand2.data.lconst);
+         TR_ASSERT_FATAL(operand2.data.lconst < 64, "lshl cannot shift more than the size of the container (64, is %l)\n", operand2.data.lconst);
+
+         int i;
+         if ((operand1.data.lconst == 0) || (operand2.data.lconst == 0)) {
+            result.data.lconst = operand1.data.lconst;
+            break;
          }
+         else if (operand1.data.lconst > 0) {
+            for (i = 62; i >=0; --i){
+               if (operand1.data.lconst & (1<<i)) break;
+            }
+         }
+         else {
+            for (i = 62; i >=0; --i){
+               if ((operand1.data.lconst & (1<<i))==0) break;
+            }
+         }
+         TR_ASSERT_FATAL(operand2.data.lconst <= 62 - i, "lshl will overflow with value %l and shift %l\n", operand1.data.lconst, operand2.data.lconst);
+         result.data.lconst = operand1.data.lconst << operand2.data.lconst;
          break;
       }
       case TR::lshr:
@@ -132,15 +147,24 @@ TR::TreeInterpreter::performOp(TR::Node * node){
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
-         if (operand2.data.lconst < 64){
-            result.data.lconst = operand1.data.lconst >> operand2.data.lconst;
+         TR_ASSERT_FATAL(operand2.data.lconst >= 0, "lshr cannot have negative shift amount %l\n", operand2.data.lconst);
+         TR_ASSERT_FATAL(operand2.data.lconst < 64, "lshr cannot shift more than the size of the container (64, is %l)\n", operand2.data.lconst);
+
+         int i;
+         if (operand1.data.lconst < 0) {
+            result.data.lconst = operand1.data.lconst;
+            for (int i = 0; i < operand2.data.lconst; ++i) {
+               result.data.lconst = result.data.lconst >> 1;
+               result.data.lconst = result.data.lconst | (1<<63);
+            }
          } else {
-            result.data.lconst = 0;
+            result.data.lconst = operand1.data.lconst >> operand2.data.lconst;
          }
          break;
       }
       case TR::lrol:
       {
+         //TODO: this needs error handling. Possible undefined behaviours with signed overflow.
          operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
          operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
          result.type = Int64;
@@ -328,28 +352,16 @@ TR::TreeInterpreter::performOp(TR::Node * node){
       }
       case TR::lmax:
       {
-         int64_t max, temp;
-         max = (nodeValueMap[node->getChild(0)->getGlobalIndex()]).data.lconst;
-         for (int i = 1; i < node->getNumChildren(); ++i){
-            temp = (nodeValueMap[node->getChild(i)->getGlobalIndex()]).data.lconst;
-            if (temp > max)
-               max = temp;
-         }
-         result.type = Int64;
-         result.data.lconst = max;
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.data.lconst = std::max(operand1.data.lconst, operand2.data.lconst);
          break;
       }
       case TR::lmin:
       {
-         int64_t min, temp;
-         min = nodeValueMap[node->getChild(0)->getGlobalIndex()].data.lconst;
-         for (int i = 1; i < node->getNumChildren(); ++i){
-            int64_t temp = nodeValueMap[node->getChild(i)->getGlobalIndex()].data.lconst;
-            if (min > temp)
-               min = temp;
-         }
-         result.type = Int64;
-         result.data.lconst = min;
+         operand1 = nodeValueMap[node->getChild(0)->getGlobalIndex()];
+         operand2 = nodeValueMap[node->getChild(1)->getGlobalIndex()];
+         result.data.lconst = std::min(operand1.data.lconst, operand2.data.lconst);
          break;
       }
       default:

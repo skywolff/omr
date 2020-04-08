@@ -32,21 +32,11 @@ class Block;
 class OptimizationManager;
 class TreeTop;
 
-static const char ValueTypes[9][10] = {
-   "NoType",
-   "Int8",
-   "Int16",
-   "Int32",
-   "Int64",
-   "Float",
-   "Double",
-   "Address",
-   "Boolean"
-};
-
 class TreeInterpreter : public TR::Optimization
 {
    public:
+   static const char ValueTypes[8][10];
+   
    enum Datatype {
       NoType=0,
       Int8,
@@ -68,19 +58,19 @@ class TreeInterpreter : public TR::Optimization
    };
    
    struct Value {
-      enum Datatype type;
-      union Data data;
+      Datatype type;
+      Data data;
    };
 
 
-   typedef std::pair<ncount_t const, struct Value> NodeToValueMapEntry;
+   typedef std::pair<ncount_t const, Value> NodeToValueMapEntry;
    typedef TR::typed_allocator<NodeToValueMapEntry, TR::Region&> NodeToValueMapAlloc;
-   typedef std::map<ncount_t, struct Value, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
+   typedef std::map<ncount_t, Value, std::less<ncount_t>, NodeToValueMapAlloc> NodeToValueMap;
    NodeToValueMap nodeValueMap;
 
-   typedef std::pair<TR::Symbol * const, struct Value> SymbolTableEntry;
+   typedef std::pair<TR::Symbol * const, Value> SymbolTableEntry;
    typedef TR::typed_allocator<SymbolTableEntry, TR::Region&> SymbolTableAlloc;
-   typedef std::map<TR::Symbol *, struct Value, std::less<TR::Symbol *>, SymbolTableAlloc> SymbolTable;
+   typedef std::map<TR::Symbol *, Value, std::less<TR::Symbol *>, SymbolTableAlloc> SymbolTable;
    SymbolTable symbolTable;
 
    explicit TreeInterpreter(TR::OptimizationManager *manager);
