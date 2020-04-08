@@ -78,7 +78,8 @@ int32_t Tril::SimpleCompiler::compileWithVerifier(TR::IlVerifier* verifier) {
        }
 
     int32_t rc = 0;
-    auto entry_point = compileMethodFromDetails(NULL, methodDetails, warm, rc);
+   //  auto entry_point = compileMethodFromDetails(NULL, methodDetails, warm, rc);
+    auto entry_point = compileMethodFromDetails(NULL, methodDetails, noOpt, rc);
 
     // if compilation was successful, set the entry point for the compiled body
     if (rc == 0)

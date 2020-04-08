@@ -49,6 +49,7 @@ add_executable(comptest
 	TypeConversionTest.cpp
 	TernaryTest.cpp
 	MinimalTest.cpp
+	interpretertest/InterpreterTest.cpp
 )
 
 target_link_libraries(comptest

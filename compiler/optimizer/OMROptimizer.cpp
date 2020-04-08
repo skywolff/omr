@@ -1266,6 +1266,7 @@ static void breakForTesting(int index)
 int32_t OMR::Optimizer::performOptimization(const OptimizationStrategy *optimization, int32_t firstOptIndex, int32_t lastOptIndex, int32_t doTiming)
    {
    OMR::Optimizations optNum = optimization->_num;
+   printf("here %d\n", optNum);
    TR::OptimizationManager *manager = getOptimization(optNum);
    TR_ASSERT(manager != NULL, "Optimization manager should have been initialized for %s.",
       getOptimizationName(optNum));
